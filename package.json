@@ -1,7 +1,7 @@
 {
-  "name": "tankanarchy",
-  "version": "3.0.0",
-  "description": "A multiplayer tank battle arena game",
+  "name": "ultimateGame",
+  "version": "2.0.0",
+  "description": "A multiplayer ultimate game",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/penumbragames/tankanarchy.git"
+    "url": "git+https://github.com/NickHAnderson019/UltimateMPGamev2.git"
   },
-  "author": "Alvin Lin (omgimanerd)",
+  "author": "Nick Anderson",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/penumbragames/tankanarchy/issues"
+    "url": "https://github.com/NickHAnderson019/UltimateMPGamev2issues"
   },
-  "homepage": "https://github.com/penumbragames/tankanarchy#readme",
+  "homepage": "https://github.com/NickHAnderson019/UltimateMPGamev2#readme",
   "dependencies": {
     "express": "^4.16.4",
     "jquery": "^3.4.0",
