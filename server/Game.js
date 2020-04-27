@@ -1,12 +1,12 @@
 /**
  * Game class on the server to manage the state of existing players and
  * and entities.
- * @author alvin@omgimanerd.tech (Alvin Lin)
+ * @author Nick Anderson
  */
 
-const Bullet = require('./Bullet')
 const Player = require('./Player')
-const Powerup = require('./Powerup')
+// const Disc = require('./Disc')
+
 
 const Constants = require('../lib/Constants')
 
@@ -28,8 +28,7 @@ class Game {
      * associated with them. This should always be parallel with sockets.
      */
     this.players = new Map()
-    this.projectiles = []
-    this.powerups = []
+    // this.disc = null
 
     this.lastUpdateTime = 0
     this.deltaTime = 0
@@ -100,10 +99,10 @@ class Game {
     const player = this.players.get(socketID)
     if (player) {
       player.updateOnInput(data)
-      if (data.shoot && player.canShoot()) {
-        const projectiles = player.getProjectilesFromShot()
-        this.projectiles.push(...projectiles)
-      }
+      // if (data.shoot && player.canShoot()) {
+      //   const projectiles = player.getProjectilesFromShot()
+      //   this.projectiles.push(...projectiles)
+      // }
     }
   }
 
@@ -120,76 +119,75 @@ class Game {
      * that need it.
      */
     const entities = [
-      ...this.players.values(),
-      ...this.projectiles,
-      ...this.powerups
+      ...this.players.values()
+      // ...this.disc
     ]
     entities.forEach(
       entity => { entity.update(this.lastUpdateTime, this.deltaTime) })
-    for (let i = 0; i < entities.length; ++i) {
-      for (let j = i + 1; j < entities.length; ++j) {
-        let e1 = entities[i]
-        let e2 = entities[j]
-        if (!e1.collided(e2)) {
-          continue
-        }
-
-        // Player-Bullet collision interaction
-        if (e1 instanceof Bullet && e2 instanceof Player) {
-          e1 = entities[j]
-          e2 = entities[i]
-        }
-        if (e1 instanceof Player && e2 instanceof Bullet &&
-          e2.source !== e1) {
-          e1.damage(e2.damage)
-          if (e1.isDead()) {
-            e1.spawn()
-            e1.deaths++
-            e2.source.kills++
-          }
-          e2.destroyed = true
-        }
-
-        // Player-Powerup collision interaction
-        if (e1 instanceof Powerup && e2 instanceof Player) {
-          e1 = entities[j]
-          e2 = entities[i]
-        }
-        if (e1 instanceof Player && e2 instanceof Powerup) {
-          e1.applyPowerup(e2)
-          e2.destroyed = true
-        }
-
-        // Bullet-Bullet interaction
-        if (e1 instanceof Bullet && e2 instanceof Bullet &&
-          e1.source !== e2.source) {
-          e1.destroyed = true
-          e2.destroyed = true
-        }
-
-        // Bullet-Powerup interaction
-        if (e1 instanceof Powerup && e2 instanceof Bullet ||
-          e1 instanceof Bullet && e2 instanceof Powerup) {
-          e1.destroyed = true
-          e2.destroyed = true
-        }
-      }
-    }
-
-    /**
-     * Filters out destroyed projectiles and powerups.
-     */
-    this.projectiles = this.projectiles.filter(
-      projectile => !projectile.destroyed)
-    this.powerups = this.powerups.filter(
-      powerup => !powerup.destroyed)
-
-    /**
-     * Repopulate the world with new powerups.
-     */
-    while (this.powerups.length < Constants.POWERUP_MAX_COUNT) {
-      this.powerups.push(Powerup.create())
-    }
+    // for (let i = 0; i < entities.length; ++i) {
+    //   for (let j = i + 1; j < entities.length; ++j) {
+    //     let e2 = entities[j]
+    //     let e1 = entities[i]
+    //     if (!e1.collided(e2)) {
+    //       continue
+    //     }
+    //
+    //     // Player-Bullet collision interaction
+    //     if (e1 instanceof Bullet && e2 instanceof Player) {
+    //       e1 = entities[j]
+    //       e2 = entities[i]
+    //     }
+    //     if (e1 instanceof Player && e2 instanceof Bullet &&
+    //       e2.source !== e1) {
+    //       e1.damage(e2.damage)
+    //       if (e1.isDead()) {
+    //         e1.spawn()
+    //         e1.deaths++
+    //         e2.source.kills++
+    //       }
+    //       e2.destroyed = true
+    //     }
+    //
+    //     // Player-Powerup collision interaction
+    //     if (e1 instanceof Powerup && e2 instanceof Player) {
+    //       e1 = entities[j]
+    //       e2 = entities[i]
+    //     }
+    //     if (e1 instanceof Player && e2 instanceof Powerup) {
+    //       e1.applyPowerup(e2)
+    //       e2.destroyed = true
+    //     }
+    //
+    //     // Bullet-Bullet interaction
+    //     if (e1 instanceof Bullet && e2 instanceof Bullet &&
+    //       e1.source !== e2.source) {
+    //       e1.destroyed = true
+    //       e2.destroyed = true
+    //     }
+    //
+    //     // Bullet-Powerup interaction
+    //     if (e1 instanceof Powerup && e2 instanceof Bullet ||
+    //       e1 instanceof Bullet && e2 instanceof Powerup) {
+    //       e1.destroyed = true
+    //       e2.destroyed = true
+    //     }
+    //   }
+    // }
+    //
+    // /**
+    //  * Filters out destroyed projectiles and powerups.
+    //  */
+    // this.projectiles = this.projectiles.filter(
+    //   projectile => !projectile.destroyed)
+    // this.powerups = this.powerups.filter(
+    //   powerup => !powerup.destroyed)
+    //
+    // /**
+    //  * Repopulate the world with new powerups.
+    //  */
+    // while (this.powerups.length < Constants.POWERUP_MAX_COUNT) {
+    //   this.powerups.push(Powerup.create())
+    // }
   }
 
   /**
@@ -201,9 +199,8 @@ class Game {
       const currentPlayer = this.players.get(socketID)
       this.clients.get(socketID).emit(Constants.SOCKET_UPDATE, {
         self: currentPlayer,
-        players: players,
-        projectiles: this.projectiles,
-        powerups: this.powerups
+        players: players
+        // disc: this.disc
       })
     })
   }

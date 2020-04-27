@@ -1,0 +1,11 @@
+
+#canvas-container {
+  width: 100%;
+  text-align:center;
+}
+canvas {
+  width: 600px;
+  height: 600px;
+  border: 5px solid black;
+  display: inline;
+}

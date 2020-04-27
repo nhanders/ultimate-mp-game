@@ -1,7 +1,7 @@
 {
-  "name": "ultimateGame",
-  "version": "2.0.0",
-  "description": "A multiplayer ultimate game",
+  "name": "ultimate-game-v2",
+  "version": "1.0.0",
+  "description": "A multiplayer game of the sport ultimate",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -12,25 +12,23 @@
     "url": "git+https://github.com/NickHAnderson019/UltimateMPGamev2.git"
   },
   "author": "Nick Anderson",
-  "license": "MIT",
+  "license": "ISC",
   "bugs": {
-    "url": "https://github.com/NickHAnderson019/UltimateMPGamev2issues"
+    "url": "https://github.com/NickHAnderson019/UltimateMPGamev2/issues"
   },
   "homepage": "https://github.com/NickHAnderson019/UltimateMPGamev2#readme",
   "dependencies": {
-    "express": "^4.16.4",
-    "jquery": "^3.4.0",
-    "morgan": "^1.9.1",
-    "popper.js": "^1.14.7",
-    "pug": "^2.0.3",
-    "socket.io": "^2.2.0",
-    "webpack-cli": "^3.2.3"
+    "express": "^4.17.1",
+    "jquery": "^3.5.0",
+    "morgan": "^1.10.0",
+    "socket.io": "^2.3.0"
   },
   "devDependencies": {
     "css-loader": "^2.1.1",
-    "less": "^3.9.0",
+    "less": "^3.11.1",
     "less-loader": "^4.1.0",
     "mini-css-extract-plugin": "^0.5.0",
-    "webpack": "^4.29.6"
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11"
   }
 }

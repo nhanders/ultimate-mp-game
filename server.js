@@ -1,39 +1,37 @@
 /**
  * This is the server app script that is run on the server.
- * @author alvin@omgimanerd.tech (Alvin Lin)
+ * @author Nick Anderson
  */
 
-const PORT = process.env.PORT || 5000
-const FRAME_RATE = 1000 / 60
-const CHAT_TAG = '[Tank Anarchy]'
+ const PORT = process.env.PORT || 5000
+ const FRAME_RATE = 1000 / 60
+ // const CHAT_TAG = '[Tank Anarchy]'
 
-// Dependencies.
-const express = require('express')
-const http = require('http')
-const morgan = require('morgan')
-const path = require('path')
-const socketIO = require('socket.io')
+// Dependencies
+var express = require('express');
+var http = require('http');
+var path = require('path');
+const morgan = require('morgan');
+var socketIO = require('socket.io');
 
-const Game = require('./server/Game')
-
+// Scripts
 const Constants = require('./lib/Constants')
+const Game = require('./server/Game');
 
 // Initialization.
-const app = express()
-const server = http.Server(app)
-const io = socketIO(server)
-const game = new Game()
+var app = express();
+var server = http.Server(app);
+var io = socketIO(server);
+var game = new Game();
 
-app.set('port', PORT)
+app.set('port', PORT);
 
-app.use(morgan('dev'))
+app.use(morgan('dev'));
 app.use('/client', express.static(path.join(__dirname, '/client')))
 app.use('/dist', express.static(path.join(__dirname, '/dist')))
 
-// Routing
-app.get('/', (request, response) => {
-  response.sendFile(path.join(__dirname, 'views/index.html'))
-})
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'views/index.html'))); // might be able to remove path here.
+
 
 /**
  * Server side input handler, modifies the state of the players and the
@@ -43,11 +41,6 @@ app.get('/', (request, response) => {
 io.on('connection', socket => {
   socket.on(Constants.SOCKET_NEW_PLAYER, (data, callback) => {
     game.addNewPlayer(data.name, socket)
-    io.sockets.emit(Constants.SOCKET_CHAT_SERVER_CLIENT, {
-      name: CHAT_TAG,
-      message: `${data.name} has joined the game.`,
-      isNotification: true
-    })
     callback()
   })
 
@@ -55,20 +48,8 @@ io.on('connection', socket => {
     game.updatePlayerOnInput(socket.id, data)
   })
 
-  socket.on(Constants.SOCKET_CHAT_CLIENT_SERVER, data => {
-    io.sockets.emit(Constants.SOCKET_CHAT_SERVER_CLIENT, {
-      name: game.getPlayerNameBySocketId(socket.id),
-      message: data
-    })
-  })
-
   socket.on(Constants.SOCKET_DISCONNECT, () => {
     const name = game.removePlayer(socket.id)
-    io.sockets.emit(Constants.SOCKET_CHAT_SERVER_CLIENT, {
-      name: CHAT_TAG,
-      message: ` ${name} has left the game.`,
-      isNotification: true
-    })
   })
 })
 
