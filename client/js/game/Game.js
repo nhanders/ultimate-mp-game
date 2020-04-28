@@ -78,6 +78,7 @@ class Game {
   onReceiveGameState(state) {
     this.self = state.self
     this.players = state.players
+    this.disc = state.disc
     // this.projectiles = state.projectiles
     // this.powerups = state.powerups
 
@@ -122,7 +123,8 @@ class Game {
         down: this.input.down,
         left: this.input.left,
         right: this.input.right,
-        throw: this.input.mouseDown
+        mouseDown: this.input.mouseDown,
+        mouseCoords: this.input.mouseCoords
         // turretAngle: Util.normalizeAngle(playerToMouseVector.angle + Math.PI)
       })
     }
@@ -139,7 +141,7 @@ class Game {
 
       // this.projectiles.forEach(this.drawing.drawBullet.bind(this.drawing))
       // this.powerups.forEach(this.drawing.drawPowerup.bind(this.drawing))
-
+      this.drawing.drawDisc(this.disc)
       this.drawing.drawPlayer(true, this.self)
       this.players.forEach(player => this.drawing.drawPlayer(false, player))
     }

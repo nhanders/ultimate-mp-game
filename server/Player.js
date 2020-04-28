@@ -40,7 +40,7 @@ class Player extends Entity {
     // this.lastShotTime = 0
     // this.health = Constants.PLAYER_MAX_HEALTH
     this.hitboxSize = Constants.PLAYER_DEFAULT_HITBOX_SIZE
-
+    this.hasDisc = false;
     // this.powerups = {}
 
     // this.kills = 0
@@ -55,7 +55,7 @@ class Player extends Entity {
    */
   static create(name, socketID) {
     const player = new Player(name, socketID)
-    player.position = new Vector(100, 100);
+    // player.position = new Vector(Constants.PLAYER_START[0], Constants.PLAYER_START[1]);
     return player
   }
 
@@ -65,28 +65,37 @@ class Player extends Entity {
    */
   updateOnInput(data) {
     if (data.up && data.left){
-      this.velocity = [-this.speed/Math.sqrt(2), this.speed/Math.sqrt(2)];
+      this.velocity = Vector.fromArray([-this.speed/Math.sqrt(2), -this.speed/Math.sqrt(2)]);
     }
     else if (data.up && data.right){
-      this.velocity = [this.speed/Math.sqrt(2), this.speed/Math.sqrt(2)];
+      this.velocity = Vector.fromArray([this.speed/Math.sqrt(2), -this.speed/Math.sqrt(2)]);
     }
     else if (data.down && data.left){
-      this.velocity = [-this.speed/Math.sqrt(2), -this.speed/Math.sqrt(2)];
+      this.velocity = Vector.fromArray([-this.speed/Math.sqrt(2), this.speed/Math.sqrt(2)]);
     }
     else if (data.down && data.right){
-      this.velocity = [this.speed/Math.sqrt(2), -this.speed/Math.sqrt(2)];
+      this.velocity = Vector.fromArray([this.speed/Math.sqrt(2), this.speed/Math.sqrt(2)]);
+    }
+    else if (data.left && data.right){
+      this.velocity = Vector.zero();
+    }
+    else if (data.up && data.down){
+      this.velocity = Vector.zero();
     }
     else if (data.up){
-      this.velocity = [0, this.speed];
+      this.velocity = Vector.fromArray([0, -this.speed]);
     }
     else if (data.left){
-      this.velocity = [-this.speed, 0];
+      this.velocity = Vector.fromArray([-this.speed, 0]);
     }
     else if (data.down){
-      this.velocity = [0, -this.speed];
+      this.velocity = Vector.fromArray([0, this.speed]);
     }
     else if (data.right){
-      this.velocity = [this.speed, 0];
+      this.velocity = Vector.fromArray([this.speed, 0]);
+    }
+    else{
+      this.velocity = Vector.zero();
     }
     // if (data.up) {
     //   this.velocity = Vector.fromPolar(this.speed, this.tankAngle)
@@ -189,6 +198,15 @@ class Player extends Entity {
    */
   hasDisc() {
     return this.hasDisc;
+  }
+
+  /**
+   * Set starting position of player
+   * @param {Array} startPosition the x and y coordinates of the starting position
+   */
+  setStartPosition(startPosition) {
+    this.position = new Vector(0,0);
+    this.position = Vector.fromArray(startPosition);
   }
 
   // /**

@@ -28,7 +28,7 @@ const Game = require('./game/Game')
       // $('#name-prompt-container').empty()
       // $('#name-prompt-container').append(
         // $('<span>').addClass('fa fa-2x fa-spinner fa-pulse'))
-      socket.emit('new-player', { name }, () => {
+      socket.emit('new-player', "Nick" , () => {
         // $('#name-prompt-overlay').remove()
         // $('#canvas').focus()
         game.run()

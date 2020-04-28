@@ -67,7 +67,15 @@ class Drawing {
   drawPlayer(isSelf, player) {
     this.context.save();
     this.context.beginPath();
-    this.context.fillStyle = isSelf ? 'blue': 'red';
+    this.context.fillStyle = 'blue';
+    if (isSelf){
+      this.context.arc(player.position.x, player.position.y, Constants.PLAYER_RAD, 0, Math.PI * 2);
+      this.context.strokeStyle = "yellow";
+      this.context.lineWidth = 4;
+      this.context.stroke();
+    }
+    // if (isSelf) this.context.fillStyle = 'blue';
+    // else this.context.fillStyle = 'red';
     this.context.arc(player.position.x, player.position.y, Constants.PLAYER_RAD, 0, Math.PI * 2);
     this.context.fill();
     this.context.restore();
@@ -110,6 +118,19 @@ class Drawing {
     // }
 
     // this.context.restore()
+  }
+
+  /**
+   * Draws the disc to the canvas as a circle..
+   * @param {Disc} disc The disc object to draw.
+   */
+  drawDisc(disc) {
+    this.context.save();
+    this.context.beginPath();
+    this.context.fillStyle = 'orange';
+    this.context.arc(disc.position.x, disc.position.y, Constants.DISC_RAD, 0, Math.PI * 2);
+    this.context.fill();
+    this.context.restore();
   }
 
   // /**

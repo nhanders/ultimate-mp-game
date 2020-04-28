@@ -5,8 +5,7 @@
  */
 
 const Player = require('./Player')
-// const Disc = require('./Disc')
-
+const Disc = require('./Disc')
 
 const Constants = require('../lib/Constants')
 
@@ -28,10 +27,11 @@ class Game {
      * associated with them. This should always be parallel with sockets.
      */
     this.players = new Map()
-    // this.disc = null
+    this.disc = Disc.createNewDisc([500,500])
 
     this.lastUpdateTime = 0
     this.deltaTime = 0
+    this.numberOfPlayers = 0
   }
 
   /**
@@ -59,6 +59,10 @@ class Game {
   addNewPlayer(name, socket) {
     this.clients.set(socket.id, socket)
     this.players.set(socket.id, Player.create(name, socket.id))
+    this.numberOfPlayers = this.players.size;
+
+    const newplayer = this.players.get(socket.id);
+    newplayer.setStartPosition([Constants.PLAYER_START[0]+this.numberOfPlayers*20, Constants.PLAYER_START[1]]);
   }
 
   /**
@@ -106,6 +110,10 @@ class Game {
     }
   }
 
+  // addNewDisc() {
+  //   this.disc = Disc.createNewDisc([200,200])
+  // }
+
   /**
    * Updates the state of all the objects in the game.
    */
@@ -119,8 +127,8 @@ class Game {
      * that need it.
      */
     const entities = [
-      ...this.players.values()
-      // ...this.disc
+      ...this.players.values(),
+      this.disc
     ]
     entities.forEach(
       entity => { entity.update(this.lastUpdateTime, this.deltaTime) })
@@ -196,11 +204,12 @@ class Game {
   sendState() {
     const players = [...this.players.values()]
     this.clients.forEach((client, socketID) => {
+      // console.log(players.filter((player) => player.socketID != socketID))
       const currentPlayer = this.players.get(socketID)
       this.clients.get(socketID).emit(Constants.SOCKET_UPDATE, {
         self: currentPlayer,
-        players: players
-        // disc: this.disc
+        players: players.filter((player) => player.socketID != socketID),
+        disc: this.disc
       })
     })
   }
