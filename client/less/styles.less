@@ -20,14 +20,34 @@
    display: inline;
  }
 
- #scoreboard-container {
+ #left-container {
    width: 200px;
    height: 600px;
    border: 1px solid black;
+   background-color: #013220;
+}
+
+#right-container {
+  width: 200px;
+  height: 600px;
+  border: 1px solid black;
+  background-color: #013220;
+}
+
+#scoreboard-container {
+  width: 200px;
+  height: 300px;
+  // border: 1px solid black;
+}
+
+#left-container table{
+  margin: auto;
+  color: white;
+  // padding-top: 10px;
 }
 
 #scoreboard-container table{
-  margin: auto;
+  // margin: auto;
   padding-top: 10px;
 }
 
@@ -49,6 +69,13 @@ html, body {
   font-family: helvetica,verdana, arial;
   // user-select: none;
 }
+
+.nobull {
+  list-style-type: none;
+  padding-left: 0;
+ }
+
+
 //
 //
 // #name-prompt-overlay {

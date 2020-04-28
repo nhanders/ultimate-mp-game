@@ -6,32 +6,68 @@
   </head>
   <body>
     <div class="flex-container">
-      <div id="scoreboard-container">
-        <table>
-          <tr>
-            <th colspan='2'>
-              <h1 id="title_sb">Scoreboard</h1>
-            </th>
-          </tr>
-          <tr>
-            <td id='t1_sb'>
-              <h3 id="t1_name">Team 1:</h3>
-            </td>
-            <td>
-              <h3 id="t1_score">5</h3>
-            </td>
-          </tr>
-          <tr>
-            <td id='t2_sb'>
-              <h3 id="t2_name">Team 2:</h3>
-            </td>
-            <td>
-              <h3 id="t2_score">10</h3>
-            </td>
-          </tr>
-        </table>
+      <div id="left-container">
+        <div id="scoreboard-container">
+          <table>
+            <tr>
+              <th colspan='2'>
+                <h1 id="title_sb">Scoreboard</h1>
+              </th>
+            </tr>
+            <tr>
+              <td id='t1_sb'>
+                <h3 id="t1_name">Team 1:</h3>
+              </td>
+              <td>
+                <h3 id="t1_score">0</h3>
+              </td>
+            </tr>
+            <tr>
+              <td id='t2_sb'>
+                <h3 id="t2_name">Team 2:</h3>
+              </td>
+              <td>
+                <h3 id="t2_score">0</h3>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <div id="teaminfo-container">
+          <table>
+            <tr>
+              <th colspan='2'>
+                <h1 id="title_ti">Teams</h1>
+              </th>
+            </tr>
+            <tr>
+              <td id=''>
+                <h3 id="">Team 1</h3>
+              </td>
+              <td>
+                <h3 id="">Team 2</h3>
+              </td>
+            </tr>
+            <tr>
+              <td id=''>
+                <ul class="nobull" id='team1-list'>
+                  <li>Nick</li>
+                  <li>Chris</li>
+                </ul>
+              </td>
+              <td id=''>
+                <ul class="nobull" id='team2-list'>
+                  <li>Jaxi</li>
+                  <li>Tess</li>
+                </ul>
+              </td>
+            </tr>
+          </table>
+        </div>
       </div>
       <canvas id="canvas"></canvas>
+      <div id="right-container">
+
+      </div>
     </div>
   </body>
   <script src='/dist/client.bundle.js'></script>

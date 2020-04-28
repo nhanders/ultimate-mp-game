@@ -126,61 +126,23 @@ class Drawing {
    */
   drawDisc(disc) {
     this.context.save();
+    // draw disc
     this.context.beginPath();
-    this.context.fillStyle = 'orange';
+    if (disc.onGround) this.context.fillStyle = '#fed8b1';
+    else this.context.fillStyle = 'orange';
     this.context.arc(disc.position.x, disc.position.y, Constants.DISC_RAD, 0, Math.PI * 2);
     this.context.fill();
+    //draw landing spot
+    if (disc.throwDest){
+      this.context.beginPath();
+      this.context.arc(disc.throwDest.x, disc.throwDest.y, 0.5*Constants.DISC_RAD, 0, Math.PI * 2);
+      this.context.strokeStyle = "red";
+      this.context.lineWidth = 3;
+      this.context.setLineDash([1, 1]);
+      this.context.stroke();
+    }
     this.context.restore();
   }
-
-  // /**
-  //  * Draws a bullet (tank shell) to the canvas.
-  //  * @param {Bullet} bullet The bullet to draw to the canvas
-  //  */
-  // drawBullet(bullet) {
-  //   this.context.save()
-  //   const canvasCoords = this.viewport.toCanvas(bullet.position)
-  //   this.context.translate(canvasCoords.x, canvasCoords.y)
-  //   this.context.rotate(Drawing.translateAngle(bullet.angle))
-  //   this.drawCenteredImage(this.images[Constants.DRAWING_IMG_BULLET])
-  //   this.context.restore()
-  // }
-
-  // /**
-  //  * Draws a powerup to the canvas.
-  //  * @param {Powerup} powerup The powerup to draw
-  //  */
-  // drawPowerup(powerup) {
-  //   this.context.save()
-  //   const canvasCoords = this.viewport.toCanvas(powerup.position)
-  //   this.context.translate(canvasCoords.x, canvasCoords.y)
-  //   this.drawCenteredImage(this.images[powerup.type])
-  //   this.context.restore()
-  // }
-
-  /**
-   * Draws the background tiles to the canvas.
-   */
-  // drawTiles() {
-  //   const start = this.viewport.toCanvas(
-  //     { x: Constants.WORLD_MIN, y: Constants.WORLD_MIN })
-  //   const end = this.viewport.toCanvas(
-  //     { x: Constants.WORLD_MAX, y: Constants.WORLD_MAX })
-  //   for (let x = start.x; x < end.x; x += Constants.DRAWING_TILE_SIZE) {
-  //     for (let y = start.y; y < end.y; y += Constants.DRAWING_TILE_SIZE) {
-  //       this.context.drawImage(this.images[Constants.DRAWING_IMG_TILE], x, y)
-  //     }
-  //   }
-  // }
-
-  // Drawing.prototype.drawDisc = function(x, y) {
-  //   this.context.save();
-  //   this.context.beginPath();
-  //   this.context.fillStyle = 'orange';
-  //   this.context.arc(x, y, 5, 0, Math.PI * 2);
-  //   this.context.fill();
-  //   this.context.restore();
-  // };
 
   /**
    * Draws the surrounds to the canvas.

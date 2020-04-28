@@ -32,9 +32,10 @@ class Disc extends Entity {
 
     this.hitboxSize = Constants.DISC_RAD
 
-    this.throwDest = new Vector()
+    this.throwDest = null
     this.position = position
     this.speed = 0.3;
+    this.onGround = true;
   }
 
   // /**
@@ -70,6 +71,8 @@ class Disc extends Entity {
    * @param {Object} data A JSON Object storing the input state
    */
   updateOnInput(data) {
+    this.onGround = false;
+    // console.log(this.state)
     if (data.throw){
       this.distanceTraveled = 0;
       this.throwDest = Vector.fromArray(data.mouseCoords);
@@ -78,6 +81,7 @@ class Disc extends Entity {
       this.throwDist = this.throwVect.mag;
       this.throwVectAngle = this.throwVect.angle;
       this.velocity = Vector.fromPolar(this.speed, this.throwVectAngle)
+      this.onGround = false;
     }
   }
 
@@ -85,8 +89,9 @@ class Disc extends Entity {
    * Update the disc given the client's input data from Input.js
    * @param {Object} data A JSON Object storing the input state
    */
-  stopDisc(data) {
+  stopDisc() {
     this.velocity = Vector.zero();
+    this.throwDest = null;
   }
 
   /**
@@ -98,10 +103,10 @@ class Disc extends Entity {
     const distanceStep = Vector.scale(this.velocity, deltaTime)
     this.position.add(distanceStep)
     this.distanceTraveled += distanceStep.mag
-    // if (this.inWorld() || distanceStep > Disc.MAX_TRAVEL_DISTANCE_SQ) {
-    // if (this.inWorld() || this.distanceTraveled > this.ThrowDist) {
-    if (this.distanceTraveled > this.throwDist) {
-      this.velocity = Vector.zero()
+    if (!this.inWorld() || this.distanceTraveled > this.throwDist) {
+      this.onGround = true;
+      this.stopDisc();
+      this.distanceTraveled = 0;
     }
   }
 }

@@ -16,13 +16,27 @@ canvas {
   border: 5px solid black;
   display: inline;
 }
-#scoreboard-container {
+#left-container {
   width: 200px;
   height: 600px;
   border: 1px solid black;
+  background-color: #013220;
+}
+#right-container {
+  width: 200px;
+  height: 600px;
+  border: 1px solid black;
+  background-color: #013220;
+}
+#scoreboard-container {
+  width: 200px;
+  height: 300px;
+}
+#left-container table {
+  margin: auto;
+  color: white;
 }
 #scoreboard-container table {
-  margin: auto;
   padding-top: 10px;
 }
 #title_sb {
@@ -38,5 +52,9 @@ html,
 body {
   text-align: center;
   font-family: helvetica,verdana, arial;
+}
+.nobull {
+  list-style-type: none;
+  padding-left: 0;
 }
 
