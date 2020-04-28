@@ -6,7 +6,7 @@
 
 const Drawing = require('./Drawing')
 const Input = require('./Input')
-// const Leaderboard = require('./Leaderboard')
+const Scoreboard = require('./Scoreboard')
 // const Viewport = require('./Viewport')
 
 const Constants = require('../../../lib/Constants')
@@ -22,19 +22,17 @@ class Game {
    * @param {Socket} socket The socket connected to the server
    * @param {Drawing} drawing The Drawing object for canvas rendering
    * @param {Input} input The Input object for tracking user input
+   * @param {Scoreboard} input The Scoreboard object for scorebaord container
    */
-  constructor(socket, drawing, input) {
+  constructor(socket, drawing, input, scoreboard) {
     this.socket = socket
 
-    // this.viewport = viewport
     this.drawing = drawing
     this.input = input
-    // this.leaderboard = leaderboard
+    this.scoreboard = scoreboard
 
     this.self = null
     this.players = []
-    // this.projectiles = []
-    // this.powerups = []
 
     this.animationFrameId = null
     this.lastUpdateTime = 0
@@ -46,9 +44,11 @@ class Game {
    * @param {Socket} socket The socket connected to the server
    * @param {string} canvasElementID The ID of the canvas element to render the
    *   game to
+   * @param {string} scoreboardElementID The ID of the DOM element which will
+   *   hold the Scoreboard
    * @return {Game}
    */
-  static create(socket, canvasElementID) {
+  static create(socket, canvasElementID, scoreboardElementID) {
     const canvas = document.getElementById(canvasElementID)
     canvas.width = Constants.CANVAS_WIDTH
     canvas.height = Constants.CANVAS_HEIGHT
@@ -56,8 +56,9 @@ class Game {
     const drawing = Drawing.create(canvas)
     const input = Input.create(document, canvas)
 
+    const scoreboard = Scoreboard.create(scoreboardElementID)
 
-    const game = new Game(socket, drawing, input)
+    const game = new Game(socket, drawing, input, scoreboard)
     game.init()
     return game
   }
@@ -123,7 +124,7 @@ class Game {
         down: this.input.down,
         left: this.input.left,
         right: this.input.right,
-        mouseDown: this.input.mouseDown,
+        throw: this.input.mouseDown,
         mouseCoords: this.input.mouseCoords
         // turretAngle: Util.normalizeAngle(playerToMouseVector.angle + Math.PI)
       })

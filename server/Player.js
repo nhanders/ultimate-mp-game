@@ -30,21 +30,13 @@ class Player extends Entity {
 
     this.name = name
     this.socketID = socketID
+    this.team = "team1";
 
     this.lastUpdateTime = 0
-    // this.tankAngle = 0
-    // this.turretAngle = 0
-    // this.turnRate = 0
     this.speed = Constants.PLAYER_DEFAULT_SPEED
-    // this.shotCooldown = Constants.PLAYER_SHOT_COOLDOWN
-    // this.lastShotTime = 0
-    // this.health = Constants.PLAYER_MAX_HEALTH
-    this.hitboxSize = Constants.PLAYER_DEFAULT_HITBOX_SIZE
+    this.hitboxSize = Constants.PLAYER_RAD
     this.hasDisc = false;
-    // this.powerups = {}
-
-    // this.kills = 0
-    // this.deaths = 0
+    this.isInEndzone = false;
   }
 
   /**
@@ -97,23 +89,13 @@ class Player extends Entity {
     else{
       this.velocity = Vector.zero();
     }
-    // if (data.up) {
-    //   this.velocity = Vector.fromPolar(this.speed, this.tankAngle)
-    // } else if (data.down) {
-    //   this.velocity = Vector.fromPolar(-this.speed, this.tankAngle)
-    // } else if (!(data.up ^ data.down)) {
-    //   this.velocity = Vector.zero()
-    // }
-    //
-    // if (data.right) {
-    //   this.turnRate = Constants.PLAYER_TURN_RATE
-    // } else if (data.left) {
-    //   this.turnRate = -Constants.PLAYER_TURN_RATE
-    // } else if (!(data.left ^ data.right)) {
-    //   this.turnRate = 0
-    // }
-    //
-    // this.turretAngle = data.turretAngle
+  }
+
+  /**
+   * Stops the player when they have the disc.
+   */
+  stopMovement() {
+    this.velocity = Vector.zero();
   }
 
   /**
@@ -124,6 +106,9 @@ class Player extends Entity {
   update(lastUpdateTime, deltaTime) {
     this.lastUpdateTime = lastUpdateTime
     this.position.add(Vector.scale(this.velocity, deltaTime))
+    if (this.position.y > Constants.FIELD_HEIGHT+Constants.FIELD_HEIGHT_OFFSET-Constants.ENDZONE_HEIGHT){
+      this.isInEndzone = true;
+    }
     // this.boundToWorld()
     // this.tankAngle = Util.normalizeAngle(
     //   this.tankAngle + this.turnRate * deltaTime)
@@ -192,13 +177,13 @@ class Player extends Entity {
   //   this.powerups[powerup.type] = powerup
   // }
 
-  /**
-   * Returns a boolean indicating if the player has disc and can throw.
-   * @return {boolean}
-   */
-  hasDisc() {
-    return this.hasDisc;
-  }
+  // /**
+  //  * Returns a boolean indicating if the player has disc and can throw.
+  //  * @return {boolean}
+  //  */
+  // hasDisc() {
+  //   return this.isHoldingDisc;
+  // }
 
   /**
    * Set starting position of player

@@ -7,6 +7,12 @@
    width: 100%;
    text-align:center;
  }
+
+ .flex-container {
+   display: flex;
+   justify-content: center;
+ }
+
  canvas {
    width: 600px;
    height: 600px;
@@ -14,12 +20,35 @@
    display: inline;
  }
 
-// html, body {
-//   width: 100%;
-//   text-align: center;
-//
-//   user-select: none;
-// }
+ #scoreboard-container {
+   width: 200px;
+   height: 600px;
+   border: 1px solid black;
+}
+
+#scoreboard-container table{
+  margin: auto;
+  padding-top: 10px;
+}
+
+#title_sb{
+  text-align: center;
+}
+
+#scoreboard-container #t1_sb{
+  color: blue;
+}
+
+#scoreboard-container #t2_sb{
+  color: red;
+}
+
+html, body {
+  // width: 100%;
+  text-align: center;
+  font-family: helvetica,verdana, arial;
+  // user-select: none;
+}
 //
 //
 // #name-prompt-overlay {

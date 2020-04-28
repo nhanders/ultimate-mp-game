@@ -5,17 +5,34 @@
     <link rel='stylesheet' type='text/css' href='/dist/main.bundle.css' />
   </head>
   <body>
-    <div id="canvas-container">
+    <div class="flex-container">
+      <div id="scoreboard-container">
+        <table>
+          <tr>
+            <th colspan='2'>
+              <h1 id="title_sb">Scoreboard</h1>
+            </th>
+          </tr>
+          <tr>
+            <td id='t1_sb'>
+              <h3 id="t1_name">Team 1:</h3>
+            </td>
+            <td>
+              <h3 id="t1_score">5</h3>
+            </td>
+          </tr>
+          <tr>
+            <td id='t2_sb'>
+              <h3 id="t2_name">Team 2:</h3>
+            </td>
+            <td>
+              <h3 id="t2_score">10</h3>
+            </td>
+          </tr>
+        </table>
+      </div>
       <canvas id="canvas"></canvas>
     </div>
   </body>
-  <!-- <script src="/public/js/game.bundle.js"></script> -->
-  <!-- <script src='/socket.io/socket.io.js'></script>
-  <script src='/node_modules/jquery/dist/jquery.min.js'></script>
-  <script src='/lib/Util.js'></script>
-  <script src='/client/js/game/Drawing.js'></script>
-  <script src='/client/js/game/Game.js'></script>
-  <script src='/client/js/game/Input.js'></script>
-  <script src='/client/js/client.js'></script> -->
   <script src='/dist/client.bundle.js'></script>
 </html>

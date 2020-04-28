@@ -30,6 +30,8 @@ class Disc extends Entity {
     this.distanceTraveled = 0
     this.destroyed = false
 
+    this.hitboxSize = Constants.DISC_RAD
+
     this.throwDest = new Vector()
     this.position = position
     this.speed = 0.3;
@@ -68,23 +70,25 @@ class Disc extends Entity {
    * @param {Object} data A JSON Object storing the input state
    */
   updateOnInput(data) {
-    if (this.mouseDown){
+    if (data.throw){
       this.distanceTraveled = 0;
-      this.throwDest = Vector.fromArray(this.mouseDown);
+      this.throwDest = Vector.fromArray(data.mouseCoords);
       this.throwSrc = this.position;
       this.throwVect = Vector.sub(this.throwDest, this.throwSrc);
-      this.throwDist = this.throwVect.mag();
-      this.throwVectNorm = Vector.scale(this.throwVect, 1/this.throwVect.mag());
-      this.velocity = Vector.scale(this.throwVectNorm, this.speed);
-      // console.log(this.throwDest)
-      // console.log(this.throwSrc)
-      // console.log(this.throwVect)
-      // console.log(this.velocity)
+      this.throwDist = this.throwVect.mag;
+      this.throwVectAngle = this.throwVect.angle;
+      this.velocity = Vector.fromPolar(this.speed, this.throwVectAngle)
     }
-    // else{
-      // this.velocity = Vector.zero();
-    // }
   }
+
+  /**
+   * Update the disc given the client's input data from Input.js
+   * @param {Object} data A JSON Object storing the input state
+   */
+  stopDisc(data) {
+    this.velocity = Vector.zero();
+  }
+
   /**
    * Performs a physics update.
    * @param {number} lastUpdateTime The last timestamp an update occurred
@@ -93,9 +97,10 @@ class Disc extends Entity {
   update(lastUpdateTime, deltaTime) {
     const distanceStep = Vector.scale(this.velocity, deltaTime)
     this.position.add(distanceStep)
-    this.distanceTraveled += distanceStep.mag2
+    this.distanceTraveled += distanceStep.mag
     // if (this.inWorld() || distanceStep > Disc.MAX_TRAVEL_DISTANCE_SQ) {
-    if (this.inWorld() || this.distanceTraveled > this.ThrowDist) {
+    // if (this.inWorld() || this.distanceTraveled > this.ThrowDist) {
+    if (this.distanceTraveled > this.throwDist) {
       this.velocity = Vector.zero()
     }
   }

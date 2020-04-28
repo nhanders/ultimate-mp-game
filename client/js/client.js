@@ -14,7 +14,7 @@ const Game = require('./game/Game')
 
 // $(document).ready(() => {
   const socket = io()
-  const game = Game.create(socket, 'canvas')
+  const game = Game.create(socket, 'canvas', 'scoreboard-container')
 
   // $('#name-input').focus()
 
