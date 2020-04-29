@@ -4,13 +4,10 @@
  * @author alvin@omgimanerd.tech (Alvin Lin)
  */
 
-// const Bullet = require('./Bullet')
-// const Powerup = require('./Powerup')
-
 const Constants = require('../lib/Constants')
+const Vector = require('../lib/Vector')
 const Entity = require('../lib/Entity')
 const Util = require('../lib/Util')
-const Vector = require('../lib/Vector')
 
 /**
  * Player class.
@@ -25,29 +22,33 @@ class Player extends Entity {
    * @param {Vector} position The player's starting location
    * @param {number} angle The player's starting tank angle
    */
-  constructor(name, socketID) {
+  constructor(name, socketID, team) {
     super()
 
     this.name = name
     this.socketID = socketID
-    this.team = "team1";
+    this.team = "t1";
 
     this.lastUpdateTime = 0
     this.speed = Constants.PLAYER_DEFAULT_SPEED
     this.hitboxSize = Constants.PLAYER_RAD
     this.hasDisc = false;
-    this.isInEndzone = false;
+    this.inEndzone = false;
+    this.hasScored = false;
+    // this.scoringEndzone = Constants.SCORING_ENDZONE_BOT;
+
+    this.team = team
   }
 
   /**
    * Creates a new Player object.
    * @param {string} name The display name of the player
    * @param {string} socketID The associated socket ID
+   * @param {Team} team The associated team object
    * @return {Player}
    */
-  static create(name, socketID) {
-    const player = new Player(name, socketID)
-    // player.position = new Vector(Constants.PLAYER_START[0], Constants.PLAYER_START[1]);
+  static create(name, socketID, team) {
+    const player = new Player(name, socketID, team)
     return player
   }
 
@@ -106,84 +107,42 @@ class Player extends Entity {
   update(lastUpdateTime, deltaTime) {
     this.lastUpdateTime = lastUpdateTime
     this.position.add(Vector.scale(this.velocity, deltaTime))
-    if (this.position.y > Constants.FIELD_HEIGHT+Constants.FIELD_HEIGHT_OFFSET-Constants.ENDZONE_HEIGHT){
-      this.isInEndzone = true;
-    }
-    // this.boundToWorld()
-    // this.tankAngle = Util.normalizeAngle(
-    //   this.tankAngle + this.turnRate * deltaTime)
+    this.setHasScored()
+    // if (this.hasScored){
+      // this.team.score += 1;
+      // this.team.toggleScoringEndzone();
+    // }
 
-    // this.updatePowerups()
+    this.boundToWorld()
   }
 
   /**
-   * Updates the Player's powerups.
+   * Return true if player is in the endzone
    */
-  // updatePowerups() {
-  //   for (const type of Constants.POWERUP_KEYS) {
-  //     const powerup = this.powerups[type]
-  //     if (!powerup) {
-  //       continue
-  //     }
-  //     switch (type) {
-  //     case Constants.POWERUP_HEALTHPACK:
-  //       this.health = Math.min(
-  //         this.health + powerup.data, Constants.PLAYER_MAX_HEALTH)
-  //       this.powerups[type] = null
-  //       break
-  //     case Constants.POWERUP_SHOTGUN:
-  //       break
-  //     case Constants.POWERUP_RAPIDFIRE:
-  //       this.shotCooldown = Constants.PLAYER_SHOT_COOLDOWN / powerup.data
-  //       break
-  //     case Constants.POWERUP_SPEEDBOOST:
-  //       this.speed = Constants.PLAYER_DEFAULT_SPEED * powerup.data
-  //       break
-  //     case Constants.POWERUP_SHIELD:
-  //       this.hitboxSize = Constants.PLAYER_SHIELD_HITBOX_SIZE
-  //       if (powerup.data <= 0) {
-  //         this.powerups[type] = null
-  //         this.hitboxSize = Constants.PLAYER_DEFAULT_HITBOX_SIZE
-  //       }
-  //       break
-  //     }
-  //     if (this.lastUpdateTime > powerup.expirationTime) {
-  //       switch (type) {
-  //       case Constants.POWERUP_HEALTHPACK:
-  //         break
-  //       case Constants.POWERUP_SHOTGUN:
-  //         break
-  //       case Constants.POWERUP_RAPIDFIRE:
-  //         this.shotCooldown = Constants.PLAYER_SHOT_COOLDOWN
-  //         break
-  //       case Constants.POWERUP_SPEEDBOOST:
-  //         this.speed = Constants.PLAYER_DEFAULT_SPEED
-  //         break
-  //       case Constants.POWERUP_SHIELD:
-  //         this.hitboxSize = Constants.PLAYER_DEFAULT_HITBOX_SIZE
-  //         break
-  //       }
-  //       this.powerups[type] = null
-  //     }
-  //   }
-  // }
+  isInEndzone() {
+    // console.log(this.team.scoringEndzone)
+    if (this.team.scoringEndzone == Constants.SCORING_ENDZONE_BOT){ // bottom endzone
+      return (this.position.y > Constants.FIELD_HEIGHT+Constants.FIELD_HEIGHT_OFFSET-Constants.ENDZONE_HEIGHT &&
+              this.position.y < Constants.CANVAS_HEIGHT-Constants.FIELD_HEIGHT_OFFSET &&
+              this.position.x > Constants.FIELD_MIN_X &&
+              this.position.x < Constants.FIELD_MAX_X)
+    }
+    else{
+      return (this.position.y > Constants.FIELD_HEIGHT_OFFSET && // top endzone
+              this.position.y < Constants.FIELD_HEIGHT_OFFSET+Constants.ENDZONE_HEIGHT &&
+              this.position.x > Constants.FIELD_MIN_X &&
+              this.position.x < Constants.FIELD_MAX_X)
+    }
+  }
 
-  // /**
-  //  * Applies a Powerup to this player.
-  //  * @param {Powerup} powerup The Powerup object.
-  //  */
-  // applyPowerup(powerup) {
-  //   powerup.expirationTime = this.lastUpdateTime + powerup.duration
-  //   this.powerups[powerup.type] = powerup
-  // }
+  /**
+   * set true if player is in the endzone with the disc (scored!)
+   */
+  setHasScored() {
+    if (this.isInEndzone() && this.hasDisc) this.hasScored = true;
+    else this.hasScored = false;
+  }
 
-  // /**
-  //  * Returns a boolean indicating if the player has disc and can throw.
-  //  * @return {boolean}
-  //  */
-  // hasDisc() {
-  //   return this.isHoldingDisc;
-  // }
 
   /**
    * Set starting position of player
@@ -193,46 +152,6 @@ class Player extends Entity {
     this.position = new Vector(0,0);
     this.position = Vector.fromArray(startPosition);
   }
-
-  // /**
-  //  * Returns an array containing new projectile objects as if the player has
-  //  * fired a shot given their current powerup state. This function does not
-  //  * perform a shot cooldown check and resets the shot cooldown.
-  //  * @return {Array<Bullet>}
-  //  */
-  // getProjectilesFromShot() {
-  //   const bullets = [Bullet.createFromPlayer(this)]
-  //   const shotgunPowerup = this.powerups[Constants.POWERUP_SHOTGUN]
-  //   if (shotgunPowerup) {
-  //     for (let i = 1; i <= shotgunPowerup.data; ++i) {
-  //       const angleDeviation = i * Math.PI / 9
-  //       bullets.push(Bullet.createFromPlayer(this, -angleDeviation))
-  //       bullets.push(Bullet.createFromPlayer(this, angleDeviation))
-  //     }
-  //   }
-  //   this.lastShotTime = this.lastUpdateTime
-  //   return bullets
-  // }
-
-  // /**
-  //  * Returns a boolean determining if the player is dead or not.
-  //  * @return {boolean}
-  //  */
-  // isDead() {
-  //   return this.health <= 0
-  // }
-
-  // /**
-  //  * Damages the player by the given amount, factoring in shields.
-  //  * @param {number} amount The amount to damage the player by
-  //  */
-  // damage(amount) {
-  //   if (this.powerups[Powerup.SHIELD]) {
-  //     this.powerups[Powerup.SHIELD].data -= 1
-  //   } else {
-  //     this.health -= amount
-  //   }
-  // }
 
   /**
    * Handles the spawning (and respawning) of the player.

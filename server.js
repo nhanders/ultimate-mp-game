@@ -32,6 +32,8 @@ app.use('/dist', express.static(path.join(__dirname, '/dist')))
 
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'views/index.html'))); // might be able to remove path here.
 
+// add team names (NEEDS WORK!)
+game.addTeams("Tigers", "Wolves")
 
 /**
  * Server side input handler, modifies the state of the players and the
@@ -39,6 +41,7 @@ app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'views/index.html')
  * the game loop.
  */
 io.on('connection', socket => {
+
   socket.on(Constants.SOCKET_NEW_PLAYER, (data, callback) => {
     game.addNewPlayer(data.name, socket)
     callback()

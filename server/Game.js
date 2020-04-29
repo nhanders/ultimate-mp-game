@@ -6,6 +6,7 @@
 
 const Player = require('./Player')
 const Disc = require('./Disc')
+const Team = require('./Team')
 
 const Constants = require('../lib/Constants')
 
@@ -28,10 +29,12 @@ class Game {
      */
     this.players = new Map()
     this.disc = Disc.createNewDisc([200,200])
+    this.teams = null;
 
     this.lastUpdateTime = 0
     this.deltaTime = 0
     this.numberOfPlayers = 0
+    this.toggle = true
   }
 
   /**
@@ -58,11 +61,29 @@ class Game {
    */
   addNewPlayer(name, socket) {
     this.clients.set(socket.id, socket)
-    this.players.set(socket.id, Player.create(name, socket.id))
+    if (this.toggle) {
+      this.players.set(socket.id, Player.create(name, socket.id, this.teams[0]))
+      this.toggle = !this.toggle;
+    }
+    else {
+      this.players.set(socket.id, Player.create(name, socket.id, this.teams[1]))
+      this.toggle = !this.toggle;
+    }
+
     this.numberOfPlayers = this.players.size;
 
     const newplayer = this.players.get(socket.id);
     newplayer.setStartPosition([Constants.PLAYER_START[0]+this.numberOfPlayers*20, Constants.PLAYER_START[1]]);
+  }
+
+  /**
+   * Creates a new player with the given name and ID.
+   * @param {string} team1Name The display name of the player.
+   * @param {string} team2Name The display name of the player.
+   */
+  addTeams(team1Name, team2Name) {
+    this.teams = [Team.create(team1Name, Constants.TEAM_ONE_INDEX, Constants.SCORING_ENDZONE_TOP),
+                  Team.create(team2Name, Constants.TEAM_TWO_INDEX, Constants.SCORING_ENDZONE_BOT)];
   }
 
   /**
@@ -137,8 +158,7 @@ class Game {
       for (let j = i + 1; j < entities.length; ++j) {
         let e2 = entities[j]
         let e1 = entities[i]
-        if (e1 instanceof Player) e1.hasDisc = false; // reset all players
-        if (e2 instanceof Player) e2.hasDisc = false; // reset all players
+        if (entities[i] instanceof Player) e1.hasDisc = false; // reset all players
         if (!e1.collided(e2)) continue;
 
         // Player-Disc collision interaction
@@ -146,12 +166,18 @@ class Game {
           e1 = entities[j]
           e2 = entities[i]
         }
-        // if (e1 instanceof Player && e2 instanceof Disc && e2.source !== e1) {
         if (e1 instanceof Player && e2 instanceof Disc) {
           e1.hasDisc = true;
           e1.stopMovement();
           e2.stopDisc();
-          // continue
+        }
+
+        // Player scored event
+        if (entities[i] instanceof Player && entities[i].hasScored) {
+          entities[i].team.score += 1; // increment score
+          this.teams.forEach(team => { // toggle endzones
+            team.toggleScoringEndzone();
+          });
         }
       }
     }

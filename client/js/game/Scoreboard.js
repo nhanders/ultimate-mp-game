@@ -25,21 +25,23 @@ class Scoreboard {
   }
 
   /**
-   * Updates the Scoreboard with the list of current players.
+   * Updates the Scoreboard with the score.
+   * @param {Player} currentplayer The current player
    * @param {Array<Player>} players The list of current players
    */
-  update(players) {
-    while (this.container.firstChild) {
-      this.container.removeChild(this.container.firstChild)
+  update(currentPlayer, players) {
+    if (currentPlayer.hasScored) {
+      const p_score = document.getElementById('t'+currentPlayer.team.index+'_score')
+      p_score.innerText = currentPlayer.team.score;
     }
-    // players.sort((a, b) => { return b.kills - a.kills })
-    // players.slice(0, 10).forEach(player => {
-    //   const containercontainer = document.createElement('li')
-    //   const text =
-    //     `${player.name} - Kills: ${player.kills} Deaths: ${player.deaths}`
-    //   containercontainer.appendChild(document.createTextNode(text))
-    //   this.container.appendChild(containercontainer)
-    // })
+    else {
+      players.forEach(player => {
+        if (player.hasScored) {
+          const p_score = document.getElementById('t'+player.team.index+'_score')
+          p_score.innerText = player.team.score;
+        }
+      });
+    }
   }
 }
 

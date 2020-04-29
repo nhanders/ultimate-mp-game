@@ -4,10 +4,10 @@
  * @author alvin@omgimanerd.tech (Alvin Lin)
  */
 
+ const Scoreboard = require('./Scoreboard')
+ const Teamlist = require('./Teamlist')
 const Drawing = require('./Drawing')
 const Input = require('./Input')
-const Scoreboard = require('./Scoreboard')
-// const Viewport = require('./Viewport')
 
 const Constants = require('../../../lib/Constants')
 const Vector = require('../../../lib/Vector')
@@ -24,12 +24,13 @@ class Game {
    * @param {Input} input The Input object for tracking user input
    * @param {Scoreboard} input The Scoreboard object for scorebaord container
    */
-  constructor(socket, drawing, input, scoreboard) {
+  constructor(socket, drawing, input, scoreboard, teamlist) {
     this.socket = socket
 
     this.drawing = drawing
     this.input = input
     this.scoreboard = scoreboard
+    this.teamlist = teamlist
 
     this.self = null
     this.players = []
@@ -46,9 +47,11 @@ class Game {
    *   game to
    * @param {string} scoreboardElementID The ID of the DOM element which will
    *   hold the Scoreboard
+   * @param {string} teamlistElementID The ID of the DOM element which will
+   *   hold the Teamlist
    * @return {Game}
    */
-  static create(socket, canvasElementID, scoreboardElementID) {
+  static create(socket, canvasElementID, scoreboardElementID, teamlistElementID) {
     const canvas = document.getElementById(canvasElementID)
     canvas.width = Constants.CANVAS_WIDTH
     canvas.height = Constants.CANVAS_HEIGHT
@@ -57,8 +60,9 @@ class Game {
     const input = Input.create(document, canvas)
 
     const scoreboard = Scoreboard.create(scoreboardElementID)
+    const teamlist = Teamlist.create(scoreboardElementID)
 
-    const game = new Game(socket, drawing, input, scoreboard)
+    const game = new Game(socket, drawing, input, scoreboard, teamlist)
     game.init()
     return game
   }
@@ -80,11 +84,8 @@ class Game {
     this.self = state.self
     this.players = state.players
     this.disc = state.disc
-    // this.projectiles = state.projectiles
-    // this.powerups = state.powerups
-
-    // this.viewport.updateTrackingPosition(state.self)
-    // this.leaderboard.update(state.players)
+    this.scoreboard.update(state.self, state.players)
+    this.teamlist.update(state.self, state.players)
   }
 
   /**
@@ -112,13 +113,6 @@ class Game {
    */
   update() {
     if (this.self) {
-      // this.viewport.update(this.deltaTime)
-
-      // const absoluteMouseCoords = this.viewport.toWorld(
-        // Vector.fromArray(this.input.mouseCoords))
-      // const playerToMouseVector = Vector.sub(this.self.position,
-        // absoluteMouseCoords)
-
       this.socket.emit(Constants.SOCKET_PLAYER_ACTION, {
         up: this.input.up,
         down: this.input.down,
@@ -126,7 +120,6 @@ class Game {
         right: this.input.right,
         throw: this.input.mouseDown,
         mouseCoords: this.input.mouseCoords
-        // turretAngle: Util.normalizeAngle(playerToMouseVector.angle + Math.PI)
       })
     }
   }
@@ -137,11 +130,7 @@ class Game {
   draw() {
     if (this.self) {
       this.drawing.clear()
-
       this.drawing.drawField()
-
-      // this.projectiles.forEach(this.drawing.drawBullet.bind(this.drawing))
-      // this.powerups.forEach(this.drawing.drawPowerup.bind(this.drawing))
       this.drawing.drawDisc(this.disc)
       this.drawing.drawPlayer(true, this.self)
       this.players.forEach(player => this.drawing.drawPlayer(false, player))

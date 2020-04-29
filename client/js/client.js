@@ -14,8 +14,8 @@ const Game = require('./game/Game')
 
 // $(document).ready(() => {
   const socket = io()
-  const game = Game.create(socket, 'canvas', 'scoreboard-container')
-
+  const game = Game.create(socket, 'canvas', 'scoreboard-container', 'teamlist-container')
+  const name = "Nick"
   // $('#name-input').focus()
 
   /**
@@ -28,7 +28,7 @@ const Game = require('./game/Game')
       // $('#name-prompt-container').empty()
       // $('#name-prompt-container').append(
         // $('<span>').addClass('fa fa-2x fa-spinner fa-pulse'))
-      socket.emit('new-player', "Nick" , () => {
+      socket.emit('new-player', { name }, () => {
         // $('#name-prompt-overlay').remove()
         // $('#canvas').focus()
         game.run()
