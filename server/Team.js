@@ -20,6 +20,8 @@ class Team {
     this.index = teamIndex;
     this.score = 0;
     this.scoringEndzone = scoringEndzone;
+    this.hasPossession = false;
+    this.size = 0;
   }
 
   /**
@@ -41,6 +43,15 @@ class Team {
       this.scoringEndzone = (this.scoringEndzone == Constants.SCORING_ENDZONE_BOT) ?
           Constants.SCORING_ENDZONE_TOP : Constants.SCORING_ENDZONE_BOT;
     }
+
+    /**
+     * changes the scoring enzone of the player based on team and previous endzone.
+     * @param {Array} startPosition the x and y coordinates of the starting position
+     */
+      togglePossession() {
+        this.hasPossession = (this.hasPossession) ?
+            false : true;
+      }
 
 }
 

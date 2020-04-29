@@ -131,6 +131,7 @@ class Game {
     if (this.self) {
       this.drawing.clear()
       this.drawing.drawField()
+      this.drawing.drawScoringEndzone(this.self)
       this.drawing.drawDisc(this.disc)
       this.drawing.drawPlayer(true, this.self)
       this.players.forEach(player => this.drawing.drawPlayer(false, player))

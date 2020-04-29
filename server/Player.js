@@ -36,8 +36,9 @@ class Player extends Entity {
     this.inEndzone = false;
     this.hasScored = false;
     // this.scoringEndzone = Constants.SCORING_ENDZONE_BOT;
-
+    this.timeWithDisc = 0;
     this.team = team
+    this.stalledOut = false;
   }
 
   /**
@@ -108,12 +109,19 @@ class Player extends Entity {
     this.lastUpdateTime = lastUpdateTime
     this.position.add(Vector.scale(this.velocity, deltaTime))
     this.setHasScored()
-    // if (this.hasScored){
-      // this.team.score += 1;
-      // this.team.toggleScoringEndzone();
-    // }
-
     this.boundToWorld()
+    // console.log(this.timeWithDisc)
+    if (this.hasDisc) this.timeWithDisc+=deltaTime;
+    else this.timeWithDisc=0;
+  }
+
+  /**
+   * Return true if player has had disc for more than 3 seconds
+   */
+  get isStalledOut() {
+    if (this.timeWithDisc > 5000) this.stalledOut = true; // had to make this because of a weird problem with scope in the Drawing class.
+    else this.stalledOut = false;
+    return this.timeWithDisc > 5000; // 10s or 10000ms
   }
 
   /**
@@ -149,7 +157,6 @@ class Player extends Entity {
    * @param {Array} startPosition the x and y coordinates of the starting position
    */
   setStartPosition(startPosition) {
-    this.position = new Vector(0,0);
     this.position = Vector.fromArray(startPosition);
   }
 

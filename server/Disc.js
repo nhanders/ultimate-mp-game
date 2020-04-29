@@ -36,24 +36,10 @@ class Disc extends Entity {
     this.position = position
     this.speed = 0.3;
     this.onGround = true;
+    this.isHeld = false;
+    this.firstTouch = true;
+    this.teamPossessionTracker = [false, false]
   }
-
-  // /**
-  //  * Creates a new Bullet object from a Player object firing it.
-  //  * @param {Player} player The Player object firing the bullet
-  //  * @param {number} [angleDeviation=0] The angle deviation if the bullet is
-  //  *   not traveling in the direction of the turret
-  //  * @return {Bullet}
-  //  */
-  // static createFromPlayer(player, angleDeviation = 0) {
-  //   const angle = player.turretAngle + angleDeviation
-  //   return new Bullet(
-  //     player.position.copy(),
-  //     Vector.fromPolar(Constants.BULLET_SPEED, angle),
-  //     angle,
-  //     player
-  //   )
-  // }
 
   /**
    * Creates a new Bullet object from a Player object firing it.
@@ -82,6 +68,7 @@ class Disc extends Entity {
       this.throwVectAngle = this.throwVect.angle;
       this.velocity = Vector.fromPolar(this.speed, this.throwVectAngle)
       this.onGround = false;
+      this.isHeld = false;
     }
   }
 

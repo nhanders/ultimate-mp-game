@@ -28,13 +28,16 @@ class Game {
      * associated with them. This should always be parallel with sockets.
      */
     this.players = new Map()
-    this.disc = Disc.createNewDisc([200,200])
+    this.disc = Disc.createNewDisc([Constants.CANVAS_WIDTH/2,Constants.CANVAS_HEIGHT/2])
     this.teams = null;
 
     this.lastUpdateTime = 0
     this.deltaTime = 0
     this.numberOfPlayers = 0
     this.toggle = true
+
+    this.discState = [null, null]
+    this.discOldState = [null, null]
   }
 
   /**
@@ -63,17 +66,26 @@ class Game {
     this.clients.set(socket.id, socket)
     if (this.toggle) {
       this.players.set(socket.id, Player.create(name, socket.id, this.teams[0]))
+      this.teams[0].size += 1;
       this.toggle = !this.toggle;
     }
     else {
       this.players.set(socket.id, Player.create(name, socket.id, this.teams[1]))
+      this.teams[1].size += 1;
       this.toggle = !this.toggle;
     }
 
-    this.numberOfPlayers = this.players.size;
+    // this.numberOfPlayers = this.players.size;
 
     const newplayer = this.players.get(socket.id);
-    newplayer.setStartPosition([Constants.PLAYER_START[0]+this.numberOfPlayers*20, Constants.PLAYER_START[1]]);
+    if (newplayer.team.index == Constants.TEAM_ONE_INDEX) {
+      newplayer.setStartPosition([Constants.PLAYER_TEAM_ONE_START[0]+(newplayer.team.size-1)*20, Constants.PLAYER_TEAM_ONE_START[1]]);
+      console.log(Constants.PLAYER_TEAM_ONE_START[1])
+    }
+    else{
+      console.log("THERE!")
+      newplayer.setStartPosition([Constants.PLAYER_TEAM_TWO_START[0]+(newplayer.team.size-1)*20, Constants.PLAYER_TEAM_TWO_START[1]]);
+    }
   }
 
   /**
@@ -143,6 +155,8 @@ class Game {
     const currentTime = Date.now()
     this.deltaTime = currentTime - this.lastUpdateTime
     this.lastUpdateTime = currentTime
+    // console.log(this.teams[0].hasPossession)
+    // console.log(this.disc.onGround)
 
     /**
      * Perform a physics update and collision update for all entities
@@ -154,48 +168,85 @@ class Game {
     ]
     entities.forEach(
       entity => { entity.update(this.lastUpdateTime, this.deltaTime) })
-    for (let i = 0; i < entities.length; ++i) {
-      for (let j = i + 1; j < entities.length; ++j) {
-        let e2 = entities[j]
-        let e1 = entities[i]
-        if (entities[i] instanceof Player) e1.hasDisc = false; // reset all players
-        if (!e1.collided(e2)) continue;
 
+    this.discState = [this.disc.onGround, this.disc.isHeld] // set new disc state
+    // Disc on ground
+    if (this.disc.onGround){
+      this.toggleTeamsPossession();
+    }
+
+    this.players.forEach(player => {
+      player.hasDisc = false; // could get rid of this
+
+      // stall out
+      if (player.isStalledOut){
+        // console.log("STALLED OUT!")
+        player.hasDisc = false;
+        this.disc.onGround = true;
+        this.disc.isHeld = false;
+        this.toggleTeamsPossession();
+      }
+      // COLLISIONS
+      if (player.collided(this.disc)) {
         // Player-Disc collision interaction
-        if (e1 instanceof Disc && e2 instanceof Player) {
-          e1 = entities[j]
-          e2 = entities[i]
+        if (this.disc.firstTouch){ // start of game. First person to get disc
+          this.disc.firstTouch = false;
+          player.team.hasPossession = true;
+          // ugly, but nedded for plotting
+          this.disc.teamPossessionTracker[0] = this.teams[0].hasPossession
+          this.disc.teamPossessionTracker[1] = this.teams[1].hasPossession
         }
-        if (e1 instanceof Player && e2 instanceof Disc) {
-          e1.hasDisc = true;
-          e1.stopMovement();
-          e2.stopDisc();
+        else if (player.team.hasPossession && this.disc.onGround) { // pick up from ground
+          player.hasDisc = true;
+          this.disc.isHeld = true;
+          player.stopMovement();
+          this.disc.stopDisc();
+        }
+        else if (player.team.hasPossession && !this.disc.onGround) { // catch from own player
+          player.hasDisc = true;
+          this.disc.isHeld = true;
+          player.stopMovement();
+          this.disc.stopDisc();
+        }
+        else if (!player.team.hasPossession && !this.disc.onGround && !this.disc.isHeld) { // interception
+          player.hasDisc = true;
+          this.disc.isHeld = true;
+          player.stopMovement();
+          this.disc.stopDisc();
+          this.toggleTeamsPossession();
         }
 
         // Player scored event
-        if (entities[i] instanceof Player && entities[i].hasScored) {
-          entities[i].team.score += 1; // increment score
-          this.teams.forEach(team => { // toggle endzones
-            team.toggleScoringEndzone();
-          });
+        if (player.hasScored) {
+          player.team.score += 1; // increment score
+          this.teams[0].toggleScoringEndzone();
+          this.teams[1].toggleScoringEndzone();
         }
       }
-    }
+    });
 
-    // /**
-    //  * Filters out destroyed projectiles and powerups.
-    //  */
-    // this.projectiles = this.projectiles.filter(
-    //   projectile => !projectile.destroyed)
-    // this.powerups = this.powerups.filter(
-    //   powerup => !powerup.destroyed)
-    //
-    // /**
-    //  * Repopulate the world with new powerups.
-    //  */
-    // while (this.powerups.length < Constants.POWERUP_MAX_COUNT) {
-    //   this.powerups.push(Powerup.create())
-    // }
+    this.discOldState = this.discState;
+  }
+
+  /**
+   * Toggle teams possession once.
+   */
+  toggleTeamsPossession() {
+    this.discState = [this.disc.onGround, this.disc.isHeld] // set new disc state
+    // console.log(this.discState)
+    // console.log(this.discOldState)
+    // console.log()
+    if (this.discOldState[0] !== null){ // if there has been an old state (i.e. not first iteration)
+      if (this.discState[0]!=this.discOldState[0] || this.discState[1]!=this.discOldState[1]){
+        // console.log("POSSESSION TOGGLED!")
+        this.teams[0].togglePossession()
+        this.teams[1].togglePossession()
+        // ugly, but nedded for plotting
+        this.disc.teamPossessionTracker[0] = this.teams[0].hasPossession
+        this.disc.teamPossessionTracker[1] = this.teams[1].hasPossession
+        // console.log(this.disc.teamPossessionTracker)
+      }
+    }
   }
 
   /**
