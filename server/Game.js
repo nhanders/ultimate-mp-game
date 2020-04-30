@@ -5,6 +5,7 @@
  */
 
 const Player = require('./Player')
+const Timer = require('./Timer')
 const Disc = require('./Disc')
 const Team = require('./Team')
 
@@ -29,6 +30,7 @@ class Game {
      */
     this.players = new Map()
     this.disc = Disc.createNewDisc([Constants.CANVAS_WIDTH/2,Constants.CANVAS_HEIGHT/2])
+    this.timer = Timer.create();
     this.teams = null;
 
     this.lastUpdateTime = 0
@@ -80,10 +82,8 @@ class Game {
     const newplayer = this.players.get(socket.id);
     if (newplayer.team.index == Constants.TEAM_ONE_INDEX) {
       newplayer.setStartPosition([Constants.PLAYER_TEAM_ONE_START[0]+(newplayer.team.size-1)*20, Constants.PLAYER_TEAM_ONE_START[1]]);
-      console.log(Constants.PLAYER_TEAM_ONE_START[1])
     }
     else{
-      console.log("THERE!")
       newplayer.setStartPosition([Constants.PLAYER_TEAM_TWO_START[0]+(newplayer.team.size-1)*20, Constants.PLAYER_TEAM_TWO_START[1]]);
     }
   }
@@ -144,10 +144,6 @@ class Game {
     }
   }
 
-  // addNewDisc() {
-  //   this.disc = Disc.createNewDisc([200,200])
-  // }
-
   /**
    * Updates the state of all the objects in the game.
    */
@@ -155,13 +151,12 @@ class Game {
     const currentTime = Date.now()
     this.deltaTime = currentTime - this.lastUpdateTime
     this.lastUpdateTime = currentTime
-    // console.log(this.teams[0].hasPossession)
-    // console.log(this.disc.onGround)
 
     /**
      * Perform a physics update and collision update for all entities
      * that need it.
      */
+     this.timer.update()
     const entities = [
       ...this.players.values(),
       this.disc
@@ -233,12 +228,9 @@ class Game {
    */
   toggleTeamsPossession() {
     this.discState = [this.disc.onGround, this.disc.isHeld] // set new disc state
-    // console.log(this.discState)
-    // console.log(this.discOldState)
-    // console.log()
+
     if (this.discOldState[0] !== null){ // if there has been an old state (i.e. not first iteration)
       if (this.discState[0]!=this.discOldState[0] || this.discState[1]!=this.discOldState[1]){
-        // console.log("POSSESSION TOGGLED!")
         this.teams[0].togglePossession()
         this.teams[1].togglePossession()
         // ugly, but nedded for plotting
@@ -260,7 +252,8 @@ class Game {
       this.clients.get(socketID).emit(Constants.SOCKET_UPDATE, {
         self: currentPlayer,
         players: players.filter((player) => player.socketID != socketID),
-        disc: this.disc
+        disc: this.disc,
+        timer: this.timer
       })
     })
   }

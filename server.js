@@ -35,6 +35,8 @@ app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'views/index.html')
 // add team names (NEEDS WORK!)
 game.addTeams("Tigers", "Wolves")
 
+var isGameOver = false;
+
 /**
  * Server side input handler, modifies the state of the players and the
  * game based on the input it receives. Everything runs asynchronously with
@@ -54,6 +56,11 @@ io.on('connection', socket => {
   socket.on(Constants.SOCKET_DISCONNECT, () => {
     const name = game.removePlayer(socket.id)
   })
+
+  socket.on('gameover', () => {
+    isGameOver = true;
+    console.log("GAME OVER")
+  })
 })
 
 /**
@@ -61,12 +68,13 @@ io.on('connection', socket => {
  * clients every update.
  */
 setInterval(() => {
-  game.update()
-  game.sendState()
+  if (!isGameOver) {
+    game.update()
+    game.sendState()
+  }
 }, FRAME_RATE)
 
 // Starts the server.
 server.listen(PORT, () => {
-  // eslint-disable-next-line no-console
   console.log(`Starting server on port ${PORT}`)
 })

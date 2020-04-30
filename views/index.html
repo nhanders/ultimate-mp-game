@@ -5,6 +5,19 @@
     <link rel='stylesheet' type='text/css' href='/dist/main.bundle.css' />
   </head>
   <body>
+
+    <div id='name-prompt-overlay'>
+      <div id='name-prompt-container'>
+        <form id='name-form'>
+          <input type='text' id='name-input' placeholder='Nickname'
+            autocomplete='off' />
+          <button id='name-submit'>
+            Play
+          </button>
+        </form>
+      </div>
+    </div>
+
     <div class="flex-container">
       <div id="left-container">
         <div id="scoreboard-container">
@@ -62,7 +75,9 @@
       </div>
       <canvas id="canvas"></canvas>
       <div id="right-container">
-
+        <div id="timer-container">
+          <h2 id="timer"></h2>
+        </div>
       </div>
     </div>
   </body>

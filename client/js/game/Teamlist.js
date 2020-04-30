@@ -31,6 +31,8 @@ class Teamlist {
    */
   update(currentPlayer, players) {
 
+
+
     const team1_list = document.getElementById('team1-list')
     const team2_list = document.getElementById('team2-list')
 
@@ -55,7 +57,7 @@ class Teamlist {
 
     players.forEach(player => {
       var node = document.createElement("LI");
-      var textnode = document.createTextNode(currentPlayer.name);
+      var textnode = document.createTextNode(player.name);
       node.appendChild(textnode);
 
       if (player.team.index === 1) team1_list.appendChild(node)

@@ -12,32 +12,33 @@ const io = require('socket.io-client')
 // const Chat = require('./game/Chat')
 const Game = require('./game/Game')
 
-// $(document).ready(() => {
+$(document).ready(() => {
   const socket = io()
-  const game = Game.create(socket, 'canvas', 'scoreboard-container', 'teamlist-container')
-  const name = "Nick"
-  // $('#name-input').focus()
+  const game = Game.create(socket, 'canvas', 'leaderboard')
+  // Chat.create(socket, 'chat-display', 'chat-input')
+
+  $('#name-input').focus()
 
   /**
    * Function to send the player name to the server.
    * @return {false}
    */
-  // const sendName = () => {
-    // const name = $('#name-input').val()
-    // if (name && name.length < 20) {
-      // $('#name-prompt-container').empty()
-      // $('#name-prompt-container').append(
-        // $('<span>').addClass('fa fa-2x fa-spinner fa-pulse'))
+  const sendName = () => {
+    const name = $('#name-input').val()
+    if (name && name.length < 20) {
+      $('#name-prompt-container').empty()
+      $('#name-prompt-container').append(
+        $('<span>').addClass('fa fa-2x fa-spinner fa-pulse'))
       socket.emit('new-player', { name }, () => {
-        // $('#name-prompt-overlay').remove()
-        // $('#canvas').focus()
+        $('#name-prompt-overlay').remove()
+        $('#canvas').focus()
         game.run()
       })
-    // } else {
-      // window.alert('Your name cannot be blank or over 20 characters.')
-    // }
-    // return false
-  // }
-  // $('#name-form').submit(sendName)
-  // $('#name-submit').click(sendName)
-// })
+    } else {
+      window.alert('Your name cannot be blank or over 20 characters.')
+    }
+    return false
+  }
+  $('#name-form').submit(sendName)
+  $('#name-submit').click(sendName)
+})

@@ -4,8 +4,8 @@
  * @author alvin@omgimanerd.tech (Alvin Lin)
  */
 
- const Scoreboard = require('./Scoreboard')
- const Teamlist = require('./Teamlist')
+const Scoreboard = require('./Scoreboard')
+const Teamlist = require('./Teamlist')
 const Drawing = require('./Drawing')
 const Input = require('./Input')
 
@@ -60,7 +60,8 @@ class Game {
     const input = Input.create(document, canvas)
 
     const scoreboard = Scoreboard.create(scoreboardElementID)
-    const teamlist = Teamlist.create(scoreboardElementID)
+    const teamlist = Teamlist.create(teamlistElementID)
+    // const timer = Timer.create(timerElementID)
 
     const game = new Game(socket, drawing, input, scoreboard, teamlist)
     game.init()
@@ -84,8 +85,17 @@ class Game {
     this.self = state.self
     this.players = state.players
     this.disc = state.disc
+    this.timer = state.timer
     this.scoreboard.update(state.self, state.players)
     this.teamlist.update(state.self, state.players)
+
+    console.log(this.timer)
+    // this.timer.update()
+
+    if (this.timer.isDone) {
+      console.log("DONE!")
+      this.socket.emit('gameover')
+    }
   }
 
   /**
@@ -135,8 +145,18 @@ class Game {
       this.drawing.drawDisc(this.disc)
       this.drawing.drawPlayer(true, this.self)
       this.players.forEach(player => this.drawing.drawPlayer(false, player))
+      this.drawTimer()
     }
   }
+
+  /**
+   * Draws the state of the game to the canvas.
+   */
+  drawTimer() {
+    const timerEl = document.getElementById('timer')
+    timerEl.textContent = this.timer.timerTimeStr
+  }
+
 }
 
 module.exports = Game
