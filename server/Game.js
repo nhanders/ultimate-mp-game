@@ -66,7 +66,7 @@ class Game {
    */
   addNewPlayer(name, socket) {
     this.clients.set(socket.id, socket)
-    if (this.toggle) {
+    if (this.teams[1].size >= this.teams[0].size) {
       this.players.set(socket.id, Player.create(name, socket.id, this.teams[0]))
       this.teams[0].size += 1;
       this.toggle = !this.toggle;
@@ -110,6 +110,7 @@ class Game {
     }
     if (this.players.has(socketID)) {
       const player = this.players.get(socketID)
+      player.team.size -= 1;
       this.players.delete(socketID)
       return player.name
     }

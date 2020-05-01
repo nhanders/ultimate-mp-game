@@ -94,8 +94,20 @@ class Disc extends Entity {
       this.onGround = true;
       this.stopDisc();
       this.distanceTraveled = 0;
+      if (!this.inWorld()){
+        this.adjustDiscPosition()
+      }
+
     }
   }
+
+  adjustDiscPosition(){
+    if (this.position.x <= Constants.FIELD_MIN_X) this.position.x += 5;
+    if (this.position.x >= Constants.FIELD_MAX_X) this.position.x -= 5;
+    if (this.position.y <= Constants.FIELD_MIN_Y) this.position.y += 5;
+    if (this.position.y >= Constants.FIELD_MAX_Y) this.position.y -= 5;
+  }
+
 }
 
 module.exports = Disc

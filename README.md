@@ -16,5 +16,5 @@ the project.
 
 # Acknowledgements
 
-This game was created by forking the game [Tank Anarchy](https://github.com/penumbragames/tankanarchy) created by Alvin Lin 
+This game was created by forking the game [Tank Anarchy](https://github.com/penumbragames/tankanarchy) created by Alvin Lin
 and Kenneth Li

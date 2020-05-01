@@ -74,7 +74,7 @@ class Drawing {
 
       if (Date.now() > this.endTime) {
         this.holdStallOut = false;
-        console.log("END")
+        // console.log("END")
       }
     }
 
@@ -94,8 +94,8 @@ class Drawing {
         this.stallOutX = player.position.x+10
         this.stallOutY = player.position.y-10
         this.holdStallOut = true;
-        this.endTime = Date.now() + 1000; // hold for two seconds
-        console.log("START")
+        this.endTime = Date.now() + 1000; // hold for one seconds
+        // console.log("START")
         this.opacity = 1.0;
       }
       this.context.closePath();

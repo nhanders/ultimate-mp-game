@@ -13,6 +13,7 @@ class Teamlist {
    */
   constructor(container) {
     this.container = container
+    
   }
 
   /**
@@ -31,7 +32,8 @@ class Teamlist {
    */
   update(currentPlayer, players) {
 
-
+    const team1_name = document.getElementById('team1-name')
+    const team2_name = document.getElementById('team2-name')
 
     const team1_list = document.getElementById('team1-list')
     const team2_list = document.getElementById('team2-list')
@@ -46,22 +48,36 @@ class Teamlist {
 
     // update team list
     var node = document.createElement("LI");
+    node.id = currentPlayer.socketID;
+    // console.log(currentPlayer)
     var textnode = document.createTextNode(currentPlayer.name);
     node.appendChild(textnode);
 
-    // console.log("Player name")
-    // console.log(currentPlayer.name)
+    // console.log(currentPlayer.team.name)
 
-    if (currentPlayer.team.index === 1) team1_list.appendChild(node)
-    else team2_list.appendChild(node)
+    if (currentPlayer.team.index === 1) {
+      team1_list.appendChild(node)
+      team1_name.textContent = currentPlayer.team.name
+    }
+    else {
+      team2_list.appendChild(node)
+      team2_name.textContent = currentPlayer.team.name
+    }
 
     players.forEach(player => {
       var node = document.createElement("LI");
+      node.id = player.socketID;
       var textnode = document.createTextNode(player.name);
       node.appendChild(textnode);
 
-      if (player.team.index === 1) team1_list.appendChild(node)
-      else team2_list.appendChild(node)
+      if (player.team.index === 1) {
+        team1_list.appendChild(node)
+        team1_name.textContent = player.team.name
+      }
+      else {
+        team2_list.appendChild(node)
+        team2_name.textContent = player.team.name
+      }
     });
   }
 }

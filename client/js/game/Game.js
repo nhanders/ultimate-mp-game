@@ -82,18 +82,21 @@ class Game {
    * @param {Object} state The game state received from the server
    */
   onReceiveGameState(state) {
+    if (this.players.length != state.players.length || this.self == null) {
+      this.teamlist.update(state.self, state.players)
+    }
     this.self = state.self
     this.players = state.players
     this.disc = state.disc
     this.timer = state.timer
-    this.scoreboard.update(state.self, state.players)
-    this.teamlist.update(state.self, state.players)
 
-    console.log(this.timer)
+    this.scoreboard.update(state.self, state.players)
+
+    // console.log(this.timer)
     // this.timer.update()
 
     if (this.timer.isDone) {
-      console.log("DONE!")
+      // console.log("DONE!")
       this.socket.emit('gameover')
     }
   }
