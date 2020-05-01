@@ -55,6 +55,10 @@ io.on('connection', socket => {
 
   socket.on(Constants.SOCKET_DISCONNECT, () => {
     const name = game.removePlayer(socket.id)
+    if (game.players.size == 0) {
+      game = new Game();
+      game.addTeams("Frisbaes", "Hammer Time")
+    }
   })
 
   socket.on('gameover', () => {

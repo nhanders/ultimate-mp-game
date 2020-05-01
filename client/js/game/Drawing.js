@@ -63,6 +63,14 @@ class Drawing {
     this.context.fill();
     this.context.closePath();
 
+    // draw name under player
+    if (!isSelf){
+      this.context.beginPath();
+      this.context.fillStyle = "rgba(255,255,255,0.3)"
+      this.context.font = "8px Verdana";
+      this.context.fillText(player.name, player.position.x, player.position.y+15);
+      this.context.closePath();
+    }
     if (this.holdStallOut) { // hold stallout text
       this.context.beginPath();
       this.context.fillStyle = "rgba(255,255,255,"+this.opacity+")"
