@@ -62,7 +62,18 @@ class Timer {
    */
   setIsDone() {
     this.isDone = (this.timerTime_ms <= 0);
+    this.reset();
   }
+
+  /**
+   * Updates the Timer with the score.
+   * @param {Player} currentplayer The current player
+   * @param {Array<Player>} players The list of current players
+   */
+  reset() {
+    this.endTime = Date.now() + Constants.GAME_TIME_MS;
+  }
+
 }
 
 module.exports = Timer

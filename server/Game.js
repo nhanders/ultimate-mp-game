@@ -158,6 +158,8 @@ class Game {
      * that need it.
      */
      this.timer.update()
+     if (this.players.size == 0) this.timer.reset()
+
     const entities = [
       ...this.players.values(),
       this.disc

@@ -98,6 +98,7 @@ class Game {
     if (this.timer.isDone) {
       // console.log("DONE!")
       this.socket.emit('gameover')
+      alert("GAME OVER! (but not really. I still need to add this.)")
     }
   }
 
