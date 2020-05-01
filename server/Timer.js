@@ -14,7 +14,6 @@ class Timer {
    * @param {container} container The container element for the Timer
    */
   constructor() {
-    // this.endTime = Date.now() + 5*1000*60 // 5 minutes
     this.endTime = Date.now() + Constants.GAME_TIME_MS // 5 minutes
     this.isDone = false;
   }
@@ -36,8 +35,8 @@ class Timer {
   update() {
 
     this.timerTime_ms = this.endTime - Date.now();
-
-    if (this.isDone) this.reset();
+    this.setIsDone();
+    if (this.isDone) this.timerTime_ms = 0;
     // create a new Date object
     var dateObj = new Date(this.timerTime_ms);
 
@@ -51,8 +50,6 @@ class Timer {
                     seconds.toString().padStart(2, '0');
 
     this.timerTimeStr = formattedTime
-    // const timer = document.getElementById('timer')
-    // timer.textContent = formattedTime
   }
 
   /**
