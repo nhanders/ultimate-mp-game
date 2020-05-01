@@ -37,7 +37,7 @@ class Timer {
 
     this.timerTime_ms = this.endTime - Date.now();
 
-    if (this.isDone) this.timerTime_ms = 0;
+    if (this.isDone) this.reset();
     // create a new Date object
     var dateObj = new Date(this.timerTime_ms);
 
@@ -62,7 +62,6 @@ class Timer {
    */
   setIsDone() {
     this.isDone = (this.timerTime_ms <= 0);
-    this.reset();
   }
 
   /**

@@ -33,7 +33,7 @@ app.use('/dist', express.static(path.join(__dirname, '/dist')))
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'views/index.html'))); // might be able to remove path here.
 
 // add team names (NEEDS WORK!)
-game.addTeams("Tigers", "Wolves")
+game.addTeams("Frisbaes", "Hammer Time")
 
 var isGameOver = false;
 
