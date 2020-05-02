@@ -35,7 +35,8 @@ class Disc extends Entity {
 
     this.throwDest = null
     this.position = position
-    // this.speed = 0.3;
+    this.alpha = 10;
+
     this.onGround = true;
     this.isHeld = false;
     this.firstTouch = true;
@@ -69,8 +70,11 @@ class Disc extends Entity {
       this.throwVect = Vector.sub(this.throwDest, this.throwSrc);
       this.throwDistance = this.throwVect.mag;
       this.throwVectAngle = this.throwVect.angle;
+      // this.bendAngle = this.alpha/this.throwDistance; // the angle of release relative to throw angle
+      // this.bendAngle = Math.PI/4
       this.throwDistanceRemaining = this.throwDistance;
       this.speed = this.throwDistanceRemaining*this.speedDecayConst+this.speedAtDest;
+      // this.speed = 0.3
       this.velocity = Vector.fromPolar(this.speed, this.throwVectAngle)
       this.onGround = false;
       this.isHeld = false;
@@ -104,14 +108,19 @@ class Disc extends Entity {
       }
     }
     else if (this.throwDest){ // the disc is not on the ground and there is a throw
-      this.throwDistanceRemaining = this.throwDistance - this.distanceTraveled;
+      // this.throwDistanceRemaining = this.throwDistance - this.distanceTraveled;
       // OR
-      // this.throwDistanceRemainingVec = (this.throwDest - this.position)
+      this.throwDistanceRemaining = Vector.sub(this.throwDest, this.position).mag
       this.speed = this.throwDistanceRemaining*this.speedDecayConst+this.speedAtDest;
+      // this.velocity = Vector.fromPolar(this.speed, this.throwVectAngle+this.bendAngle)
       this.velocity = Vector.fromPolar(this.speed, this.throwVectAngle)
+
     }
   }
 
+  /**
+   * Moves the disc off the sidelines if it is out of bounds.
+   */
   adjustDiscPosition(){
     if (this.position.x <= Constants.FIELD_MIN_X) this.position.x += 5;
     if (this.position.x >= Constants.FIELD_MAX_X) this.position.x -= 5;
