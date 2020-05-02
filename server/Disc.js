@@ -29,16 +29,19 @@ class Disc extends Entity {
     // this.damage = Constants.BULLET_DEFAULT_DAMAGE
     this.distanceTraveled = 0
     this.destroyed = false
-
+    this.speedAtDest = Constants.SPEED_AT_DEST;
+    this.speedDecayConst = Constants.SPEED_DECAY;
     this.hitboxSize = Constants.DISC_RAD
 
     this.throwDest = null
     this.position = position
-    this.speed = 0.3;
+    // this.speed = 0.3;
     this.onGround = true;
     this.isHeld = false;
     this.firstTouch = true;
     this.teamPossessionTracker = [false, false]
+
+    this.stopDisc()
   }
 
   /**
@@ -64,8 +67,10 @@ class Disc extends Entity {
       this.throwDest = Vector.fromArray(data.mouseCoords);
       this.throwSrc = this.position;
       this.throwVect = Vector.sub(this.throwDest, this.throwSrc);
-      this.throwDist = this.throwVect.mag;
+      this.throwDistance = this.throwVect.mag;
       this.throwVectAngle = this.throwVect.angle;
+      this.throwDistanceRemaining = this.throwDistance;
+      this.speed = this.throwDistanceRemaining*this.speedDecayConst+this.speedAtDest;
       this.velocity = Vector.fromPolar(this.speed, this.throwVectAngle)
       this.onGround = false;
       this.isHeld = false;
@@ -90,14 +95,20 @@ class Disc extends Entity {
     const distanceStep = Vector.scale(this.velocity, deltaTime)
     this.position.add(distanceStep)
     this.distanceTraveled += distanceStep.mag
-    if (!this.inWorld() || this.distanceTraveled > this.throwDist) {
+    if (!this.inWorld() || this.distanceTraveled > this.throwDistance) {
       this.onGround = true;
       this.stopDisc();
       this.distanceTraveled = 0;
       if (!this.inWorld()){
-        this.adjustDiscPosition()
+        this.adjustDiscPosition() // move the disc off the sidelines
       }
-
+    }
+    else if (this.throwDest){ // the disc is not on the ground and there is a throw
+      this.throwDistanceRemaining = this.throwDistance - this.distanceTraveled;
+      // OR
+      // this.throwDistanceRemainingVec = (this.throwDest - this.position)
+      this.speed = this.throwDistanceRemaining*this.speedDecayConst+this.speedAtDest;
+      this.velocity = Vector.fromPolar(this.speed, this.throwVectAngle)
     }
   }
 
