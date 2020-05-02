@@ -5,7 +5,7 @@
 
  const PORT = process.env.PORT || 5000
  const FRAME_RATE = 1000 / 60
- // const CHAT_TAG = '[Tank Anarchy]'
+ const CHAT_TAG = '[Game]'
 
 // Dependencies
 var express = require('express');
@@ -46,11 +46,23 @@ io.on('connection', socket => {
 
   socket.on(Constants.SOCKET_NEW_PLAYER, (data, callback) => {
     game.addNewPlayer(data.name, socket)
+    io.sockets.emit(Constants.SOCKET_CHAT_SERVER_CLIENT, {
+      name: CHAT_TAG,
+      message: `${data.name} has joined the game.`,
+      isNotification: true
+    })
     callback()
   })
 
   socket.on(Constants.SOCKET_PLAYER_ACTION, data => {
     game.updatePlayerOnInput(socket.id, data)
+  })
+
+  socket.on(Constants.SOCKET_CHAT_CLIENT_SERVER, data => {
+    io.sockets.emit(Constants.SOCKET_CHAT_SERVER_CLIENT, {
+      name: game.getPlayerNameBySocketId(socket.id),
+      message: data
+    })
   })
 
   socket.on(Constants.SOCKET_DISCONNECT, () => {
@@ -59,6 +71,11 @@ io.on('connection', socket => {
       game = new Game();
       game.addTeams("Frisbaes", "Hammer Time")
     }
+    io.sockets.emit(Constants.SOCKET_CHAT_SERVER_CLIENT, {
+      name: CHAT_TAG,
+      message: ` ${name} has left the game.`,
+      isNotification: true
+    })
   })
 
   socket.on('gameover', () => {
