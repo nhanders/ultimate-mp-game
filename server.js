@@ -51,6 +51,11 @@ io.on('connection', socket => {
       message: `${data.name} has joined the game.`,
       isNotification: true
     })
+    socket.emit(Constants.SOCKET_CHAT_SERVER_CLIENT, {
+      name: CHAT_TAG,
+      message: `Instructions: Use WASD keys to move and click to throw. Good luck!`,
+      isNotification: true
+    })
     callback()
   })
 
@@ -79,8 +84,9 @@ io.on('connection', socket => {
   })
 
   socket.on('gameover', () => {
-    isGameOver = true;
+    // isGameOver = true;
     console.log("GAME OVER")
+    // game.reset(); // everyone back to lines. scores zero.
   })
 })
 
