@@ -42,6 +42,7 @@ class Disc extends Entity {
     this.isHeld = false;
     this.firstTouch = true;
     this.teamPossessionTracker = [false, false]
+    this.playerHoldingDisc = null;
 
     this.stopDisc()
   }
@@ -63,6 +64,35 @@ class Disc extends Entity {
    */
   updateOnInput(data) {
     this.onGround = false;
+
+    // the disc moves around the player while it is held
+    const throwDest = Vector.fromArray(data.mouseCoords);
+    const throwSrc = this.position;
+    const throwVect = Vector.sub(throwDest, throwSrc);
+    var throwAngle = throwVect.angle
+     throwAngle *= -1;
+
+    if (data.right && this.isHeld) {
+      if (this.playerHoldingDisc.team.scoringEndzone == Constants.SCORING_ENDZONE_BOT){
+        this.position.y = this.playerHoldingDisc.position.y - 12*Math.cos(throwAngle);
+        this.position.x = this.playerHoldingDisc.position.x - 12*Math.sin(throwAngle);
+      }
+      else {
+        this.position.y = this.playerHoldingDisc.position.y + 12*Math.cos(throwAngle);
+        this.position.x = this.playerHoldingDisc.position.x + 12*Math.sin(throwAngle);
+      }
+    }
+    if (data.left && this.isHeld) {
+      if (this.playerHoldingDisc.team.scoringEndzone == Constants.SCORING_ENDZONE_BOT){
+        this.position.y = this.playerHoldingDisc.position.y + 12*Math.cos(throwAngle);
+        this.position.x = this.playerHoldingDisc.position.x + 12*Math.sin(throwAngle);
+      }
+      else {
+        this.position.y = this.playerHoldingDisc.position.y - 12*Math.cos(throwAngle);
+        this.position.x = this.playerHoldingDisc.position.x - 12*Math.sin(throwAngle);
+      }
+    }
+
     // console.log(this.state)
     if (data.throw){
       this.distanceTraveled = 0;
@@ -72,17 +102,20 @@ class Disc extends Entity {
       this.throwDistance = this.throwVect.mag;
       this.throwVectAngle = this.throwVect.angle;
       const throwGradient = (this.throwDest.y-this.throwSrc.y)/(this.throwDest.x-this.throwSrc.x)
-      this.throwGradientVectNorm = new Vector(1, -1/throwGradient);
+      const throwGradientVect = new Vector(1, -1/throwGradient);
+      this.throwGradientVectNorm = throwGradientVect.scale(1/throwGradientVect.mag)
       this.throwDistanceRemaining = this.throwDistance;
       this.speed = this.throwDistanceRemaining*this.speedDecayConst+this.speedAtDest;
       this.velocity = Vector.fromPolar(this.speed, this.throwVectAngle)
       this.onGround = false;
       this.isHeld = false;
-      this.positionSave = this.position.copy() // for curvature
+
 
       if (data.right) this.throwType = "RIGHT_TO_LEFT";
       else if (data.left) this.throwType = "LEFT_TO_RIGHT";
       else this.throwType = "STRAIGHT";
+
+      this.positionSave = this.position.copy() // for curvature
     }
   }
 
@@ -139,6 +172,8 @@ class Disc extends Entity {
     if (this.throwType == "STRAIGHT") return 0
     else if (this.throwType == "LEFT_TO_RIGHT") return (x/(this.throwDistance)*(x-this.throwDistance))
     else if (this.throwType == "RIGHT_TO_LEFT") return (-x/(this.throwDistance)*(x-this.throwDistance))
+    // else if (this.throwType == "LEFT_TO_RIGHT") return (x/(this.throwDistance/Math.abs(this.throwGradientVectNorm.y))*(x-this.throwDistance))
+    // else if (this.throwType == "RIGHT_TO_LEFT") return (-x/(this.throwDistance/Math.abs(this.throwGradientVectNorm.y))*(x-this.throwDistance))
   }
 
 }
