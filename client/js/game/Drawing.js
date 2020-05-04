@@ -121,6 +121,7 @@ class Drawing {
     this.context.beginPath();
     this.context.fillStyle = Constants.DISC_NOTGROUND_COLOUR;
     this.context.arc(disc.position.x, disc.position.y, Constants.DISC_RAD, 0, Math.PI * 2);
+    // this.context.arc(disc.positionSave.x, disc.positionSave.y, Constants.DISC_RAD, 0, Math.PI * 2);
     this.context.fill();
     this.context.closePath();
 
@@ -136,6 +137,7 @@ class Drawing {
          // no team  has possession
       }
       this.context.arc(disc.position.x, disc.position.y, 2, 0, Math.PI * 2);
+      // this.context.arc(disc.positionGamma.x, disc.positionGamma.y, 2, 0, Math.PI * 2);
       this.context.fill();
       this.context.closePath();
     }

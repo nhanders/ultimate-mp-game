@@ -36,6 +36,7 @@ class Disc extends Entity {
     this.throwDest = null
     this.position = position
     this.alpha = 10;
+    this.positionSave = this.position.copy() // for curvature
 
     this.onGround = true;
     this.isHeld = false;
@@ -70,14 +71,18 @@ class Disc extends Entity {
       this.throwVect = Vector.sub(this.throwDest, this.throwSrc);
       this.throwDistance = this.throwVect.mag;
       this.throwVectAngle = this.throwVect.angle;
-      // this.bendAngle = this.alpha/this.throwDistance; // the angle of release relative to throw angle
-      // this.bendAngle = Math.PI/4
+      const throwGradient = (this.throwDest.y-this.throwSrc.y)/(this.throwDest.x-this.throwSrc.x)
+      this.throwGradientVectNorm = new Vector(1, -1/throwGradient);
       this.throwDistanceRemaining = this.throwDistance;
       this.speed = this.throwDistanceRemaining*this.speedDecayConst+this.speedAtDest;
-      // this.speed = 0.3
       this.velocity = Vector.fromPolar(this.speed, this.throwVectAngle)
       this.onGround = false;
       this.isHeld = false;
+      this.positionSave = this.position.copy() // for curvature
+
+      if (data.right) this.throwType = "RIGHT_TO_LEFT";
+      else if (data.left) this.throwType = "LEFT_TO_RIGHT";
+      else this.throwType = "STRAIGHT";
     }
   }
 
@@ -97,9 +102,9 @@ class Disc extends Entity {
    */
   update(lastUpdateTime, deltaTime) {
     const distanceStep = Vector.scale(this.velocity, deltaTime)
-    this.position.add(distanceStep)
+    this.positionSave.add(distanceStep)
     this.distanceTraveled += distanceStep.mag
-    if (!this.inWorld() || this.distanceTraveled > this.throwDistance) {
+    if ((!this.inWorld() && this.onGround) || this.distanceTraveled > this.throwDistance) {
       this.onGround = true;
       this.stopDisc();
       this.distanceTraveled = 0;
@@ -108,13 +113,12 @@ class Disc extends Entity {
       }
     }
     else if (this.throwDest){ // the disc is not on the ground and there is a throw
-      // this.throwDistanceRemaining = this.throwDistance - this.distanceTraveled;
-      // OR
-      this.throwDistanceRemaining = Vector.sub(this.throwDest, this.position).mag
+      this.throwDistanceRemaining = Vector.sub(this.throwDest, this.positionSave).mag
+      const gamma = this.gammaFunc(this.throwDistanceRemaining)
+      this.position.x = this.positionSave.x + gamma*this.throwGradientVectNorm.x
+      this.position.y = this.positionSave.y + gamma*this.throwGradientVectNorm.y
       this.speed = this.throwDistanceRemaining*this.speedDecayConst+this.speedAtDest;
-      // this.velocity = Vector.fromPolar(this.speed, this.throwVectAngle+this.bendAngle)
       this.velocity = Vector.fromPolar(this.speed, this.throwVectAngle)
-
     }
   }
 
@@ -126,6 +130,15 @@ class Disc extends Entity {
     if (this.position.x >= Constants.FIELD_MAX_X) this.position.x -= 5;
     if (this.position.y <= Constants.FIELD_MIN_Y) this.position.y += 5;
     if (this.position.y >= Constants.FIELD_MAX_Y) this.position.y -= 5;
+  }
+
+  /**
+   * Function to add curve to the disc.
+   */
+  gammaFunc(x){
+    if (this.throwType == "STRAIGHT") return 0
+    else if (this.throwType == "LEFT_TO_RIGHT") return (x/(this.throwDistance)*(x-this.throwDistance))
+    else if (this.throwType == "RIGHT_TO_LEFT") return (-x/(this.throwDistance)*(x-this.throwDistance))
   }
 
 }
