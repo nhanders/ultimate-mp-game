@@ -19,13 +19,28 @@ $(document).ready(() => {
 
   $('#name-input').focus()
 
+  function updateSkillBudget(){
+      var skillPointsUsed = Number($('#speed').val()) + Number($('#throw_accuracy').val());
+      $('#skill-budget').text("Skill Budget: " + skillPointsUsed + "/8");
+  }
+
+  var idVar = setInterval(() => {
+    updateSkillBudget()
+  }, 100);
+
+  function stopUpdatingSkills() {
+	   clearInterval(idVar);
+  }
+
   /**
    * Function to send the player name to the server.
    * @return {false}
    */
   const sendName = () => {
     const name = $('#name-input').val()
-    if (name && name.length < 20) {
+    var skillPointsUsed = Number($('#speed').val()) + Number($('#throw_accuracy').val());
+    if (name && name.length < 20 && skillPointsUsed <= 8) {
+      stopUpdatingSkills();
       $('#name-prompt-container').empty()
       $('#name-prompt-container').append(
         $('<span>').addClass('fa fa-2x fa-spinner fa-pulse'))
@@ -34,8 +49,9 @@ $(document).ready(() => {
         $('#canvas').focus()
         game.run()
       })
-    } else {
-      window.alert('Your name cannot be blank or over 20 characters.')
+    }
+    else {
+      window.alert('Your name cannot be blank or over 20 characters and your skillbudget cannot be more than 8.')
     }
     return false
   }

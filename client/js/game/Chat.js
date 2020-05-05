@@ -23,6 +23,7 @@ class Chat {
     this.socket = socket
     this.displayElement = displayElement
     this.inputElement = inputElement
+    this.lastID = 0; // for autoscrolling
   }
 
   /**
@@ -67,13 +68,19 @@ class Chat {
    * @param {Object} data The data sent from the server
    */
   onChatReceive(data) {
+    this.lastID += 1
     const element = document.createElement('li')
     if (data.isNotification) {
       element.setAttribute('class', 'notification')
     }
-    element.appendChild(
-      document.createTextNode(`${data.name}: ${data.message}`))
+    element.appendChild(document.createTextNode(`${data.name}: ${data.message}`))
+    element.id = this.lastID.toString(10)
     this.displayElement.appendChild(element)
+    this.autoScroll();
+  }
+
+  autoScroll(){
+    document.getElementById( this.lastID.toString(10) ).scrollIntoView();
   }
 }
 
