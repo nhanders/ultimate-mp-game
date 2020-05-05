@@ -177,12 +177,17 @@ class Game {
     this.players.forEach(player => {
       player.hasDisc = false; // could get rid of this
 
+      if (player != this.disc.playerHoldingDisc) { // disc space
+        player.boundPlayerDiscSpace(this.disc.playerHoldingDisc);
+      }
+
       // stall out
       if (player.isStalledOut){
         // console.log("STALLED OUT!")
         player.hasDisc = false;
         this.disc.onGround = true;
         this.disc.isHeld = false;
+        this.disc.playerHoldingDisc = null;
         this.toggleTeamsPossession();
       }
       // COLLISIONS
@@ -195,7 +200,7 @@ class Game {
           this.disc.teamPossessionTracker[0] = this.teams[0].hasPossession
           this.disc.teamPossessionTracker[1] = this.teams[1].hasPossession
         }
-        else if (player.team.hasPossession && this.disc.onGround) { // pick up from ground
+        else if (player.team.hasPossession && this.disc.onGround && player.inField) { // pick up from ground
           player.hasDisc = true;
           this.disc.playerHoldingDisc = player;
           this.disc.isHeld = true;
@@ -221,6 +226,22 @@ class Game {
           this.disc.isHeld = true;
           this.disc.playerHoldingDisc = player;
           player.stopMovement();
+          this.disc.stopDisc();
+          this.toggleTeamsPossession();
+        }
+        else if (player.team.hasPossession && !this.disc.onGround && !this.disc.isHeld && !player.inField) { // catch out of field
+          player.hasDisc = false;
+          this.disc.isHeld = false;
+          this.disc.playerHoldingDisc = null;
+          this.disc.onGround = true;
+          this.disc.stopDisc();
+          this.toggleTeamsPossession();
+        }
+        else if (!player.team.hasPossession && !this.disc.onGround && !this.disc.isHeld && !player.inField) { // interception out of field
+          player.hasDisc = false;
+          this.disc.isHeld = false;
+          this.disc.playerHoldingDisc = null;
+          this.disc.onGround = true;
           this.disc.stopDisc();
           this.toggleTeamsPossession();
         }

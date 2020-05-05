@@ -35,7 +35,6 @@ class Player extends Entity {
     this.hasDisc = false;
     this.inEndzone = false;
     this.hasScored = false;
-    // this.scoringEndzone = Constants.SCORING_ENDZONE_BOT;
     this.timeWithDisc = 0;
     this.team = team
     this.stalledOut = false;
@@ -107,14 +106,15 @@ class Player extends Entity {
    * @param {number} deltaTime The timestep to compute the update with
    */
   update(lastUpdateTime, deltaTime) {
+    // this.old_position = this.position.copy()
     this.lastUpdateTime = lastUpdateTime
     this.position.add(Vector.scale(this.velocity, deltaTime))
     this.setHasScored()
-    this.boundToWorld()
+    this.boundToWorld() // from entity
     this.setInField();
-    // console.log(this.timeWithDisc)
+
     if (this.hasDisc) this.timeWithDisc+=deltaTime;
-    else this.timeWithDisc=0;
+    else this.timeWithDisc = 0;
   }
 
   /**
@@ -172,6 +172,19 @@ class Player extends Entity {
    */
   setStartPosition(startPosition) {
     this.position = Vector.fromArray(startPosition);
+  }
+
+  /**
+   * Bound player position out of disc space radius
+   * @param {Player} player a player object which may have disc.
+   */
+  boundPlayerDiscSpace(player) {
+    if (player) { // a player does have the disc
+      const positionVect = Vector.sub(this.position, player.position)
+      if (positionVect.mag <= Constants.DISC_SPACE_RAD){
+        this.position = Vector.add(player.position, Vector.fromPolar(Constants.DISC_SPACE_RAD, positionVect.angle))
+      }
+    }
   }
 
 }
