@@ -58,6 +58,13 @@ class Player extends Entity {
    * @param {Object} data A JSON Object storing the input state
    */
   updateOnInput(data) {
+    if (data.sprint){
+      this.speed = Constants.PLAYER_SPRINT_SPEED;
+    }
+    else{
+      this.speed = Constants.PLAYER_DEFAULT_SPEED;
+    }
+
     if (data.up && data.left){
       this.velocity = Vector.fromArray([-this.speed/Math.sqrt(2), -this.speed/Math.sqrt(2)]);
     }

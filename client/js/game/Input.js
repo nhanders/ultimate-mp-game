@@ -16,6 +16,7 @@ class Input {
     this.down = false
     this.left = false
     this.right = false
+    this.shift = false
 
     this.mouseDown = false
     this.mouseCoords = [0, 0]
@@ -61,6 +62,9 @@ class Input {
     case 83:
     case 115:
       this.down = true
+      break
+    case 16:
+      this.shift = true
     default:
       break
     }
@@ -93,6 +97,9 @@ class Input {
     case 83:
     case 115:
       this.down = false
+      break
+    case 16:
+      this.shift = false
     default:
       break
     }

@@ -133,7 +133,8 @@ class Game {
         left: this.input.left,
         right: this.input.right,
         throw: this.input.mouseDown,
-        mouseCoords: this.input.mouseCoords
+        mouseCoords: this.input.mouseCoords,
+        sprint: this.input.shift
       })
     }
   }
