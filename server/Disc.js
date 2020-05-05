@@ -110,10 +110,10 @@ class Disc extends Entity {
       this.onGround = false;
       this.isHeld = false;
 
-
-      if (data.right) this.throwType = "RIGHT_TO_LEFT";
-      else if (data.left) this.throwType = "LEFT_TO_RIGHT";
-      else this.throwType = "STRAIGHT";
+      // curve
+      if (data.right) this.throwType = Constants.THROW_RIGHT_TO_LEFT;
+      else if (data.left) this.throwType = Constants.THROW_LEFT_TO_RIGHT;
+      else this.throwType = Constants.THROW_STRAIGHT;
 
       this.positionSave = this.position.copy() // for curvature
     }
@@ -142,8 +142,11 @@ class Disc extends Entity {
       this.stopDisc();
       this.distanceTraveled = 0;
       if (!this.inWorld()){
-        this.adjustDiscPosition() // move the disc off the sidelines
+        this.adjustDiscPositionSideline() // move the disc off the sidelines
       }
+    }
+    if (this.inEndzone() && this.onGround){
+      this.adjustDiscPositionEndzone() // move the disc to top of endzone
     }
     else if (this.throwDest){ // the disc is not on the ground and there is a throw
       this.throwDistanceRemaining = Vector.sub(this.throwDest, this.positionSave).mag
@@ -158,7 +161,7 @@ class Disc extends Entity {
   /**
    * Moves the disc off the sidelines if it is out of bounds.
    */
-  adjustDiscPosition(){
+  adjustDiscPositionSideline(){
     if (this.position.x <= Constants.FIELD_MIN_X) this.position.x += 5;
     if (this.position.x >= Constants.FIELD_MAX_X) this.position.x -= 5;
     if (this.position.y <= Constants.FIELD_MIN_Y) this.position.y += 5;
@@ -166,16 +169,49 @@ class Disc extends Entity {
   }
 
   /**
+   * Moves the disc off the sidelines if it is out of bounds.
+   */
+  adjustDiscPositionEndzone(){
+    // bottom endzone
+    if (this.position.y > Constants.FIELD_HEIGHT+Constants.FIELD_HEIGHT_OFFSET-Constants.ENDZONE_HEIGHT &&
+        this.position.y < Constants.CANVAS_HEIGHT-Constants.FIELD_HEIGHT_OFFSET &&
+        this.position.x > Constants.FIELD_MIN_X &&
+        this.position.x < Constants.FIELD_MAX_X){
+
+        this.position.y = Constants.FIELD_HEIGHT+Constants.FIELD_HEIGHT_OFFSET-Constants.ENDZONE_HEIGHT;
+    }
+    // top endzone
+    else if (this.position.y > Constants.FIELD_HEIGHT_OFFSET &&
+             this.position.y < Constants.FIELD_HEIGHT_OFFSET+Constants.ENDZONE_HEIGHT &&
+             this.position.x > Constants.FIELD_MIN_X &&
+             this.position.x < Constants.FIELD_MAX_X){
+
+      this.position.y = Constants.FIELD_HEIGHT_OFFSET+Constants.ENDZONE_HEIGHT;
+    }
+  }
+
+  /**
    * Function to add curve to the disc.
    */
   gammaFunc(x){
-    if (this.throwType == "STRAIGHT") return 0
-    else if (this.throwType == "LEFT_TO_RIGHT") return (x/(this.throwDistance)*(x-this.throwDistance))
-    else if (this.throwType == "RIGHT_TO_LEFT") return (-x/(this.throwDistance)*(x-this.throwDistance))
-    // else if (this.throwType == "LEFT_TO_RIGHT") return (x/(this.throwDistance/Math.abs(this.throwGradientVectNorm.y))*(x-this.throwDistance))
-    // else if (this.throwType == "RIGHT_TO_LEFT") return (-x/(this.throwDistance/Math.abs(this.throwGradientVectNorm.y))*(x-this.throwDistance))
+    if (this.throwType == Constants.THROW_STRAIGHT) return 0
+    else if (this.throwType == Constants.THROW_LEFT_TO_RIGHT) return (x/(this.throwDistance)*(x-this.throwDistance))
+    else if (this.throwType == Constants.THROW_RIGHT_TO_LEFT) return (-x/(this.throwDistance)*(x-this.throwDistance))
   }
 
+  /**
+   * Return true if disc is in an endzone
+   */
+  inEndzone() {
+      return ((this.position.y > Constants.FIELD_HEIGHT+Constants.FIELD_HEIGHT_OFFSET-Constants.ENDZONE_HEIGHT &&
+              this.position.y < Constants.CANVAS_HEIGHT-Constants.FIELD_HEIGHT_OFFSET &&
+              this.position.x > Constants.FIELD_MIN_X &&
+              this.position.x < Constants.FIELD_MAX_X) ||
+              (this.position.y > Constants.FIELD_HEIGHT_OFFSET &&
+              this.position.y < Constants.FIELD_HEIGHT_OFFSET+Constants.ENDZONE_HEIGHT &&
+              this.position.x > Constants.FIELD_MIN_X &&
+              this.position.x < Constants.FIELD_MAX_X))
+  }
 }
 
 module.exports = Disc

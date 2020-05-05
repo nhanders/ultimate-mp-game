@@ -121,7 +121,6 @@ class Player extends Entity {
   get isStalledOut() {
     if (this.timeWithDisc >= Constants.STALL_OUT_TIME) this.stalledOut = true; // had to make this because of a weird problem with scope in the Drawing class.
     else this.stalledOut = false;
-    console.log(this.timeWithDisc)
     return this.timeWithDisc > Constants.STALL_OUT_TIME; // 10s or 10000ms
   }
 
