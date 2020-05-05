@@ -94,7 +94,7 @@ class Disc extends Entity {
     }
 
     // console.log(this.state)
-    if (data.throw){
+    if (data.throw && !this.playerHoldingDisc.isStalledOut){
       this.distanceTraveled = 0;
       this.throwDest = Vector.fromArray(data.mouseCoords);
       this.throwSrc = this.position;
@@ -109,6 +109,7 @@ class Disc extends Entity {
       this.velocity = Vector.fromPolar(this.speed, this.throwVectAngle)
       this.onGround = false;
       this.isHeld = false;
+      this.playerHoldingDisc = null;
 
       // curve
       if (data.right) this.throwType = Constants.THROW_RIGHT_TO_LEFT;

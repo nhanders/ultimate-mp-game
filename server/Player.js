@@ -39,6 +39,7 @@ class Player extends Entity {
     this.timeWithDisc = 0;
     this.team = team
     this.stalledOut = false;
+    this.inField = true;
   }
 
   /**
@@ -110,6 +111,7 @@ class Player extends Entity {
     this.position.add(Vector.scale(this.velocity, deltaTime))
     this.setHasScored()
     this.boundToWorld()
+    this.setInField();
     // console.log(this.timeWithDisc)
     if (this.hasDisc) this.timeWithDisc+=deltaTime;
     else this.timeWithDisc=0;
@@ -142,6 +144,19 @@ class Player extends Entity {
     }
   }
 
+  setInField() {
+    if (this.position.x > Constants.FIELD_MIN_X &&
+        this.position.x < Constants.FIELD_MAX_X &&
+        this.position.y > Constants.FIELD_MIN_Y &&
+        this.position.y < Constants.FIELD_MAX_Y) {
+
+      this.inField = true;
+    }
+    else {
+      this.inField = false;
+    }
+  }
+
   /**
    * set true if player is in the endzone with the disc (scored!)
    */
@@ -159,18 +174,6 @@ class Player extends Entity {
     this.position = Vector.fromArray(startPosition);
   }
 
-  /**
-   * Handles the spawning (and respawning) of the player.
-   */
-  // spawn() {
-  //   this.position = new Vector(
-  //     Util.randRange(Constants.WORLD_MIN + Constants.WORLD_PADDING,
-  //       Constants.WORLD_MAX - Constants.WORLD_PADDING),
-  //     Util.randRange(Constants.WORLD_MIN + Constants.WORLD_PADDING,
-  //       Constants.WORLD_MAX - Constants.WORLD_PADDING))
-  //   this.angle = Util.randRange(0, 2 * Math.PI)
-  //   this.health = Constants.PLAYER_MAX_HEALTH
-  // }
 }
 
 module.exports = Player

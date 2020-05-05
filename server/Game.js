@@ -202,14 +202,21 @@ class Game {
           player.stopMovement();
           this.disc.stopDisc();
         }
-        else if (player.team.hasPossession && !this.disc.onGround) { // catch from own player
+        else if (this.disc.playerHoldingDisc==player) { // player holding disc
           player.hasDisc = true;
           this.disc.isHeld = true;
           this.disc.playerHoldingDisc = player;
           player.stopMovement();
           this.disc.stopDisc();
         }
-        else if (!player.team.hasPossession && !this.disc.onGround && !this.disc.isHeld) { // interception
+        else if (player.team.hasPossession && !this.disc.onGround && !this.disc.isHeld && player.inField) { // catch from own player
+          player.hasDisc = true;
+          this.disc.isHeld = true;
+          this.disc.playerHoldingDisc = player;
+          player.stopMovement();
+          this.disc.stopDisc();
+        }
+        else if (!player.team.hasPossession && !this.disc.onGround && !this.disc.isHeld && player.inField) { // interception
           player.hasDisc = true;
           this.disc.isHeld = true;
           this.disc.playerHoldingDisc = player;
