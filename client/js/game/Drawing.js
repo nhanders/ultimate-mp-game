@@ -94,7 +94,7 @@ class Drawing {
       this.context.font = "10px Verdana";
 
       if (!player.stalledOut){
-        this.context.fillText(`${Math.ceil(player.timeWithDisc/1000)}`, player.position.x+10, player.position.y-10);
+        this.context.fillText(`${Math.floor(player.timeWithDisc/1000)}`, player.position.x+10, player.position.y-10);
       }
       else{
         // console.log("GOT HERE!")

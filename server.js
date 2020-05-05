@@ -53,7 +53,7 @@ io.on('connection', socket => {
     })
     socket.emit(Constants.SOCKET_CHAT_SERVER_CLIENT, {
       name: CHAT_TAG,
-      message: `Instructions: \nUse WASD keys to move. \nWhen you have the disc click to throw and use A (right-to-left) and D (left-to-right) to curve the disc. Good luck!`,
+      message: `Instructions: \nUse WASD keys to move. \nTo throw, click and the disc will go where you click. Also, use A (right-to-left) and D (left-to-right) to curve the disc.`,
       isNotification: true
     })
     callback()

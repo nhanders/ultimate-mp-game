@@ -116,19 +116,19 @@ class Player extends Entity {
   }
 
   /**
-   * Return true if player has had disc for more than 3 seconds
+   * Return true if player has had disc for more than 10 seconds
    */
   get isStalledOut() {
-    if (this.timeWithDisc > 5000) this.stalledOut = true; // had to make this because of a weird problem with scope in the Drawing class.
+    if (this.timeWithDisc >= Constants.STALL_OUT_TIME) this.stalledOut = true; // had to make this because of a weird problem with scope in the Drawing class.
     else this.stalledOut = false;
-    return this.timeWithDisc > 5000; // 10s or 10000ms
+    console.log(this.timeWithDisc)
+    return this.timeWithDisc > Constants.STALL_OUT_TIME; // 10s or 10000ms
   }
 
   /**
-   * Return true if player is in the endzone
+   * Return true if player is in their scoring endzone
    */
   isInEndzone() {
-    // console.log(this.team.scoringEndzone)
     if (this.team.scoringEndzone == Constants.SCORING_ENDZONE_BOT){ // bottom endzone
       return (this.position.y > Constants.FIELD_HEIGHT+Constants.FIELD_HEIGHT_OFFSET-Constants.ENDZONE_HEIGHT &&
               this.position.y < Constants.CANVAS_HEIGHT-Constants.FIELD_HEIGHT_OFFSET &&
