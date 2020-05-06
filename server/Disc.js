@@ -93,6 +93,13 @@ class Disc extends Entity {
       }
     }
 
+    if (data.up && this.isHeld) {
+      this.speedAtDest = 2*Constants.SPEED_AT_DEST;
+    }
+    else {
+      this.speedAtDest = Constants.SPEED_AT_DEST;
+    }
+
     // console.log(this.state)
     if (data.throw && !this.playerHoldingDisc.isStalledOut){
       this.distanceTraveled = 0;
