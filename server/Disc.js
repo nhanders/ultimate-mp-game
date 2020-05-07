@@ -103,37 +103,39 @@ class Disc extends Entity {
     }
 
     // Throwing
-    if (data.throw){
-      this.distanceTraveled = 0;
+    if (this.playerHoldingDisc){
+      if (data.throw){
+        this.distanceTraveled = 0;
 
-      this.throwPerfectDest = Vector.fromArray(data.mouseCoords);
-      this.throwSrc = this.position;
-      this.throwPerfectDistance = Vector.sub(this.throwPerfectDest, this.throwSrc).mag
+        this.throwPerfectDest = Vector.fromArray(data.mouseCoords);
+        this.throwSrc = this.position;
+        this.throwPerfectDistance = Vector.sub(this.throwPerfectDest, this.throwSrc).mag
 
-      var throwErrX = this.throwPerfectDistance/Constants.FIELD_HEIGHT * Util.randRange(-this.playerHoldingDisc.throw_err, this.playerHoldingDisc.throw_err);
-      var throwErrY = this.throwPerfectDistance/Constants.FIELD_HEIGHT * Util.randRange(-this.playerHoldingDisc.throw_err, this.playerHoldingDisc.throw_err);
-      this.throwDest = Vector.add(this.throwPerfectDest, Vector.fromArray([throwErrX, throwErrY]));
+        var throwErrX = this.throwPerfectDistance/Constants.FIELD_HEIGHT * Util.randRange(-this.playerHoldingDisc.throw_err, this.playerHoldingDisc.throw_err);
+        var throwErrY = this.throwPerfectDistance/Constants.FIELD_HEIGHT * Util.randRange(-this.playerHoldingDisc.throw_err, this.playerHoldingDisc.throw_err);
+        this.throwDest = Vector.add(this.throwPerfectDest, Vector.fromArray([throwErrX, throwErrY]));
 
-      this.throwVect = Vector.sub(this.throwDest, this.throwSrc);
-      this.throwDistance = this.throwVect.mag;
-      this.throwVectAngle = this.throwVect.angle;
+        this.throwVect = Vector.sub(this.throwDest, this.throwSrc);
+        this.throwDistance = this.throwVect.mag;
+        this.throwVectAngle = this.throwVect.angle;
 
-      const throwGradient = (this.throwDest.y-this.throwSrc.y)/(this.throwDest.x-this.throwSrc.x)
-      const throwGradientVect = new Vector(1, -1/throwGradient);
-      this.throwGradientVectNorm = throwGradientVect.scale(1/throwGradientVect.mag)
-      this.throwDistanceRemaining = this.throwDistance;
-      this.speed = this.throwDistanceRemaining*this.speedDecayConst+this.speedAtDest;
-      this.velocity = Vector.fromPolar(this.speed, this.throwVectAngle)
-      this.onGround = false;
-      this.isHeld = false;
-      this.playerHoldingDisc = null;
+        const throwGradient = (this.throwDest.y-this.throwSrc.y)/(this.throwDest.x-this.throwSrc.x)
+        const throwGradientVect = new Vector(1, -1/throwGradient);
+        this.throwGradientVectNorm = throwGradientVect.scale(1/throwGradientVect.mag)
+        this.throwDistanceRemaining = this.throwDistance;
+        this.speed = this.throwDistanceRemaining*this.speedDecayConst+this.speedAtDest;
+        this.velocity = Vector.fromPolar(this.speed, this.throwVectAngle)
+        this.onGround = false;
+        this.isHeld = false;
+        this.playerHoldingDisc = null;
 
-      // curve
-      if (data.right) this.throwType = Constants.THROW_RIGHT_TO_LEFT;
-      else if (data.left) this.throwType = Constants.THROW_LEFT_TO_RIGHT;
-      else this.throwType = Constants.THROW_STRAIGHT;
+        // curve
+        if (data.right) this.throwType = Constants.THROW_RIGHT_TO_LEFT;
+        else if (data.left) this.throwType = Constants.THROW_LEFT_TO_RIGHT;
+        else this.throwType = Constants.THROW_STRAIGHT;
 
-      this.positionSave = this.position.copy() // for curvature
+        this.positionSave = this.position.copy() // for curvature
+      }
     }
   }
 
