@@ -13,6 +13,7 @@ var http = require('http');
 var path = require('path');
 const morgan = require('morgan');
 var socketIO = require('socket.io');
+var favicon = require('serve-favicon');
 
 // Scripts
 const Constants = require('./lib/Constants')
@@ -29,6 +30,7 @@ app.set('port', PORT);
 app.use(morgan('dev'));
 app.use('/client', express.static(path.join(__dirname, '/client')))
 app.use('/dist', express.static(path.join(__dirname, '/dist')))
+app.use(favicon(path.join(__dirname,'client','images','favicon.ico')));
 
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'views/index.html'))); // might be able to remove path here.
 
