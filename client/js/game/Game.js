@@ -148,6 +148,7 @@ class Game {
       this.drawing.drawField()
       this.drawing.drawScoringEndzone(this.self)
       this.drawing.drawDisc(this.disc)
+      this.drawing.drawEnduranceBar(this.self)
       this.drawing.drawPlayer(true, this.self)
       this.players.forEach(player => this.drawing.drawPlayer(false, player))
       this.drawTimer()

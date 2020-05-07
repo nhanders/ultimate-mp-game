@@ -6,6 +6,7 @@
 const Constants = require('../lib/Constants')
 const Entity = require('../lib/Entity')
 const Vector = require('../lib/Vector')
+const Util = require('../lib/Util')
 
 /**
  * Disc class.
@@ -70,7 +71,7 @@ class Disc extends Entity {
     const throwSrc = this.position;
     const throwVect = Vector.sub(throwDest, throwSrc);
     var throwAngle = throwVect.angle
-     throwAngle *= -1;
+    throwAngle *= -1;
 
     if (data.right && this.isHeld) {
       if (this.playerHoldingDisc.team.scoringEndzone == Constants.SCORING_ENDZONE_BOT){
@@ -93,6 +94,7 @@ class Disc extends Entity {
       }
     }
 
+    // Hard throw
     if (data.up && this.isHeld) {
       this.speedAtDest = 2*Constants.SPEED_AT_DEST;
     }
@@ -100,14 +102,22 @@ class Disc extends Entity {
       this.speedAtDest = Constants.SPEED_AT_DEST;
     }
 
-    // console.log(this.state)
+    // Throwing
     if (data.throw && !this.playerHoldingDisc.isStalledOut){
       this.distanceTraveled = 0;
-      this.throwDest = Vector.fromArray(data.mouseCoords);
+
+      this.throwPerfectDest = Vector.fromArray(data.mouseCoords);
       this.throwSrc = this.position;
+      this.throwPerfectDistance = Vector.sub(this.throwPerfectDest, this.throwSrc).mag
+
+      var throwErrX = this.throwPerfectDistance/Constants.FIELD_HEIGHT * Util.randRange(-this.playerHoldingDisc.throw_err, this.playerHoldingDisc.throw_err);
+      var throwErrY = this.throwPerfectDistance/Constants.FIELD_HEIGHT * Util.randRange(-this.playerHoldingDisc.throw_err, this.playerHoldingDisc.throw_err);
+      this.throwDest = Vector.add(this.throwPerfectDest, Vector.fromArray([throwErrX, throwErrY]));
+
       this.throwVect = Vector.sub(this.throwDest, this.throwSrc);
       this.throwDistance = this.throwVect.mag;
       this.throwVectAngle = this.throwVect.angle;
+
       const throwGradient = (this.throwDest.y-this.throwSrc.y)/(this.throwDest.x-this.throwSrc.x)
       const throwGradientVect = new Vector(1, -1/throwGradient);
       this.throwGradientVectNorm = throwGradientVect.scale(1/throwGradientVect.mag)

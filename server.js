@@ -45,7 +45,7 @@ var isGameOver = false;
 io.on('connection', socket => {
 
   socket.on(Constants.SOCKET_NEW_PLAYER, (data, callback) => {
-    game.addNewPlayer(data.name, socket)
+    game.addNewPlayer(data.name, data.speed, data.throw_accuracy, data.endurance, socket)
     io.sockets.emit(Constants.SOCKET_CHAT_SERVER_CLIENT, {
       name: CHAT_TAG,
       message: `${data.name} has joined the game.`,

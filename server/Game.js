@@ -64,15 +64,15 @@ class Game {
    * @param {string} name The display name of the player.
    * @param {Object} socket The socket object of the player.
    */
-  addNewPlayer(name, socket) {
+  addNewPlayer(name, speed, throw_accuracy, endurance, socket) {
     this.clients.set(socket.id, socket)
     if (this.teams[1].size >= this.teams[0].size) {
-      this.players.set(socket.id, Player.create(name, socket.id, this.teams[0]))
+      this.players.set(socket.id, Player.create(name, speed, throw_accuracy, endurance, socket.id, this.teams[0]))
       this.teams[0].size += 1;
       this.toggle = !this.toggle;
     }
     else {
-      this.players.set(socket.id, Player.create(name, socket.id, this.teams[1]))
+      this.players.set(socket.id, Player.create(name, speed, throw_accuracy, endurance, socket.id, this.teams[1]))
       this.teams[1].size += 1;
       this.toggle = !this.toggle;
     }
@@ -139,7 +139,7 @@ class Game {
       if (!player.hasDisc) { // player can move
         player.updateOnInput(data);
       }
-      else if (player.hasDisc) { // player can't move but can throw
+      else if (this.disc.isHeld) { // player can't move but can throw
         this.disc.updateOnInput(data);
       }
     }
@@ -172,6 +172,8 @@ class Game {
     // Disc on ground
     if (this.disc.onGround){
       this.toggleTeamsPossession();
+      this.disc.playerHoldingDisc = null;
+      this.disc.isHeld = false;
     }
 
     this.players.forEach(player => {
@@ -196,14 +198,19 @@ class Game {
         if (this.disc.firstTouch){ // start of game. First person to get disc
           this.disc.firstTouch = false;
           player.team.hasPossession = true;
-          // ugly, but nedded for plotting
+          player.hasDisc = true;
+          this.disc.playerHoldingDisc = player;
+          this.disc.isHeld = true;
+          player.stopMovement();
+          this.disc.stopDisc();
+          // ugly, but nedded for drawing
           this.disc.teamPossessionTracker[0] = this.teams[0].hasPossession
           this.disc.teamPossessionTracker[1] = this.teams[1].hasPossession
         }
         else if (player.team.hasPossession && this.disc.onGround && player.inField) { // pick up from ground
           player.hasDisc = true;
-          this.disc.playerHoldingDisc = player;
           this.disc.isHeld = true;
+          this.disc.playerHoldingDisc = player;
           player.stopMovement();
           this.disc.stopDisc();
         }

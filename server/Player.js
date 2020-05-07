@@ -22,15 +22,28 @@ class Player extends Entity {
    * @param {Vector} position The player's starting location
    * @param {number} angle The player's starting tank angle
    */
-  constructor(name, socketID, team) {
+  constructor(name, speed_rank, throw_accuracy_rank, endurance_rank, socketID, team) {
     super()
 
     this.name = name
     this.socketID = socketID
-    this.team = "t1";
+    // this.team = "t1";
+
+    this.speed_rank = speed_rank;
+    this.throw_accuracy_rank = throw_accuracy_rank;
+    this.endurance_rank = endurance_rank;
+
+    this.default_speed = Constants.PLAYER_MIN_SPEED+this.speed_rank/100;
+    this.sprint_speed = this.default_speed*1.4; //1.3
+
+    this.throw_err = 20*(5-this.throw_accuracy_rank);
+
+    this.endurance = 5000;
+    this.endurance_decay_rate = 6-this.endurance_rank;
+    this.endurance_recovery_rate = this.endurance_rank/10;
 
     this.lastUpdateTime = 0
-    this.speed = Constants.PLAYER_DEFAULT_SPEED
+    this.speed = this.default_speed;
     this.hitboxSize = Constants.PLAYER_RAD
     this.hasDisc = false;
     this.inEndzone = false;
@@ -39,6 +52,8 @@ class Player extends Entity {
     this.team = team
     this.stalledOut = false;
     this.inField = true;
+
+    this.update_time = Date.now()
   }
 
   /**
@@ -48,8 +63,8 @@ class Player extends Entity {
    * @param {Team} team The associated team object
    * @return {Player}
    */
-  static create(name, socketID, team) {
-    const player = new Player(name, socketID, team)
+  static create(name, speed, throw_accuracy, endurance, socketID, team) {
+    const player = new Player(name, speed, throw_accuracy, endurance, socketID, team)
     return player
   }
 
@@ -58,13 +73,29 @@ class Player extends Entity {
    * @param {Object} data A JSON Object storing the input state
    */
   updateOnInput(data) {
+
+    // Sprinting stuff
+    this.last_update_time = this.update_time
+
     if (data.sprint){
-      this.speed = Constants.PLAYER_SPRINT_SPEED;
+      this.speed = this.sprint_speed;
+      this.update_time = Date.now()
+      this.update_delta_time = this.update_time - this.last_update_time;
+      this.endurance -= this.endurance_decay_rate*this.update_delta_time
+      if (this.endurance <= 0) {
+        this.endurance = 0;
+        this.speed = this.default_speed;
+      }
     }
-    else{
-      this.speed = Constants.PLAYER_DEFAULT_SPEED;
+    else if (!data.sprint){
+      this.speed = this.default_speed;
+      this.update_time = Date.now()
+      this.update_delta_time = this.update_time - this.last_update_time;
+      this.endurance += this.endurance_recovery_rate*this.update_delta_time;
+      if (this.endurance >= 5000) this.endurance = 5000;
     }
 
+    // Movement
     if (data.up && data.left){
       this.velocity = Vector.fromArray([-this.speed/Math.sqrt(2), -this.speed/Math.sqrt(2)]);
     }

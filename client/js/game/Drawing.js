@@ -142,10 +142,17 @@ class Drawing {
       this.context.closePath();
     }
 
+    if (disc.playerHoldingDisc) {
+      console.log(disc.playerHoldingDisc)
+      this.discDestError = disc.playerHoldingDisc.throw_err;
+      console.log(this.discDestError)
+    }
 
     //draw landing spot
     if (disc.throwDest){
       this.context.beginPath();
+      // console.log(0.5*Constants.DISC_RAD+this.discDestError)
+      //this.context.arc(disc.throwPerfectDest.x, disc.throwPerfectDest.y, 0.5*Constants.DISC_RAD+this.discDestError, 0, Math.PI * 2);
       this.context.arc(disc.throwDest.x, disc.throwDest.y, 0.5*Constants.DISC_RAD, 0, Math.PI * 2);
       this.context.strokeStyle = Constants.DISC_DEST_COLOUR;
       this.context.lineWidth = 3;
@@ -223,17 +230,19 @@ class Drawing {
     this.context.restore();
   }
 
-}
+  drawEnduranceBar(self){
+    this.context.save();
+    this.context.beginPath();
+    this.context.fillStyle = "white";
+    this.context.fillRect(20, 550, 10, -80)
+    this.context.closePath();
+    this.context.beginPath();
+    this.context.fillStyle = "yellow";
+    this.context.fillRect(22, 548, 6, -76*self.endurance/5000)
+    this.context.closePath();
+    this.context.restore();
+  }
 
-// for drawing stripes
-// for (var i = 0; i<4; i++) {
-//   this.context.beginPath();
-//   this.context.moveTo(((Constants.CANVAS_WIDTH-Constants.FIELD_WIDTH)/2)+2+i*99, Constants.FIELD_HEIGHT_OFFSET+2)
-//   this.context.lineTo(Constants.CANVAS_WIDTH/2-Constants.FIELD_WIDTH/2+(i+1)*99, Constants.FIELD_HEIGHT_OFFSET + Constants.ENDZONE_HEIGHT-5);
-//   this.context.strokeStyle = "rgba(255, 0, 0, 0.5)";
-//   this.context.lineWidth = 3;
-//   this.context.stroke();
-//   this.context.closePath();
-// }
+}
 
 module.exports = Drawing
