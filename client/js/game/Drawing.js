@@ -116,6 +116,7 @@ class Drawing {
    * @param {Disc} disc The disc object to draw.
    */
   drawDisc(disc) {
+    console.log(disc.position)
     this.context.save();
     // draw disc
     this.context.beginPath();
@@ -143,9 +144,7 @@ class Drawing {
     }
 
     if (disc.playerHoldingDisc) {
-      console.log(disc.playerHoldingDisc)
       this.discDestError = disc.playerHoldingDisc.throw_err;
-      console.log(this.discDestError)
     }
 
     //draw landing spot

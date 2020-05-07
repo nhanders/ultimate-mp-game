@@ -66,8 +66,6 @@ class Disc extends Entity {
   updateOnInput(data) {
     this.onGround = false;
 
-    console.log(this.position)
-
     // the disc moves around the player while it is held
     const throwDest = Vector.fromArray(data.mouseCoords);
     const throwSrc = this.position;
