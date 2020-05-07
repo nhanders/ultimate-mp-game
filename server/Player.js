@@ -74,60 +74,69 @@ class Player extends Entity {
    */
   updateOnInput(data) {
 
-    // Sprinting stuff
     this.last_update_time = this.update_time
 
-    if (data.sprint){
-      this.speed = this.sprint_speed;
-      this.update_time = Date.now()
-      this.update_delta_time = this.update_time - this.last_update_time;
-      this.endurance -= this.endurance_decay_rate*this.update_delta_time
-      if (this.endurance <= 0) {
-        this.endurance = 0;
+    if (!this.hasDisc){
+
+      // Sprinting stuff
+      if (data.sprint){
+        this.speed = this.sprint_speed;
+        this.update_time = Date.now()
+        this.update_delta_time = this.update_time - this.last_update_time;
+        this.endurance -= this.endurance_decay_rate*this.update_delta_time
+        if (this.endurance <= 0) {
+          this.endurance = 0;
+          this.speed = this.default_speed;
+        }
+      }
+      else if (!data.sprint){
         this.speed = this.default_speed;
+        this.update_time = Date.now()
+        this.update_delta_time = this.update_time - this.last_update_time;
+        this.endurance += this.endurance_recovery_rate*this.update_delta_time;
+        if (this.endurance >= 5000) this.endurance = 5000;
+      }
+
+      // Movement
+      if (data.up && data.left){
+        this.velocity = Vector.fromArray([-this.speed/Math.sqrt(2), -this.speed/Math.sqrt(2)]);
+      }
+      else if (data.up && data.right){
+        this.velocity = Vector.fromArray([this.speed/Math.sqrt(2), -this.speed/Math.sqrt(2)]);
+      }
+      else if (data.down && data.left){
+        this.velocity = Vector.fromArray([-this.speed/Math.sqrt(2), this.speed/Math.sqrt(2)]);
+      }
+      else if (data.down && data.right){
+        this.velocity = Vector.fromArray([this.speed/Math.sqrt(2), this.speed/Math.sqrt(2)]);
+      }
+      else if (data.left && data.right){
+        this.velocity = Vector.zero();
+      }
+      else if (data.up && data.down){
+        this.velocity = Vector.zero();
+      }
+      else if (data.up){
+        this.velocity = Vector.fromArray([0, -this.speed]);
+      }
+      else if (data.left){
+        this.velocity = Vector.fromArray([-this.speed, 0]);
+      }
+      else if (data.down){
+        this.velocity = Vector.fromArray([0, this.speed]);
+      }
+      else if (data.right){
+        this.velocity = Vector.fromArray([this.speed, 0]);
+      }
+      else{
+        this.velocity = Vector.zero();
       }
     }
-    else if (!data.sprint){
-      this.speed = this.default_speed;
+    else {
       this.update_time = Date.now()
       this.update_delta_time = this.update_time - this.last_update_time;
       this.endurance += this.endurance_recovery_rate*this.update_delta_time;
       if (this.endurance >= 5000) this.endurance = 5000;
-    }
-
-    // Movement
-    if (data.up && data.left){
-      this.velocity = Vector.fromArray([-this.speed/Math.sqrt(2), -this.speed/Math.sqrt(2)]);
-    }
-    else if (data.up && data.right){
-      this.velocity = Vector.fromArray([this.speed/Math.sqrt(2), -this.speed/Math.sqrt(2)]);
-    }
-    else if (data.down && data.left){
-      this.velocity = Vector.fromArray([-this.speed/Math.sqrt(2), this.speed/Math.sqrt(2)]);
-    }
-    else if (data.down && data.right){
-      this.velocity = Vector.fromArray([this.speed/Math.sqrt(2), this.speed/Math.sqrt(2)]);
-    }
-    else if (data.left && data.right){
-      this.velocity = Vector.zero();
-    }
-    else if (data.up && data.down){
-      this.velocity = Vector.zero();
-    }
-    else if (data.up){
-      this.velocity = Vector.fromArray([0, -this.speed]);
-    }
-    else if (data.left){
-      this.velocity = Vector.fromArray([-this.speed, 0]);
-    }
-    else if (data.down){
-      this.velocity = Vector.fromArray([0, this.speed]);
-    }
-    else if (data.right){
-      this.velocity = Vector.fromArray([this.speed, 0]);
-    }
-    else{
-      this.velocity = Vector.zero();
     }
   }
 
