@@ -137,7 +137,7 @@ class Game {
     const player = this.players.get(socketID)
     if (player) {
       player.updateOnInput(data); // player can move
-      if (this.disc.isHeld) { // player can't move but can throw
+      if (player.hasDisc) { // player can't move but can throw
         this.disc.updateOnInput(data);
       }
     }

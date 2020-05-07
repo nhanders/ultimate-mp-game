@@ -116,7 +116,7 @@ class Drawing {
    * @param {Disc} disc The disc object to draw.
    */
   drawDisc(disc) {
-    console.log(disc.position)
+
     this.context.save();
     // draw disc
     this.context.beginPath();
