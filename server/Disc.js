@@ -103,7 +103,7 @@ class Disc extends Entity {
     }
 
     // Throwing
-    if (data.throw && !this.playerHoldingDisc.isStalledOut){
+    if (data.throw){
       this.distanceTraveled = 0;
 
       this.throwPerfectDest = Vector.fromArray(data.mouseCoords);
